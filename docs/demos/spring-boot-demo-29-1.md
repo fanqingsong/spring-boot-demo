@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- Alibaba Druid 连接池：监控 SQL
-- `DruidConfiguration` 绑定 spring.datasource.druid
-- `DruidWebStatFilter` + 监控 Servlet
+- **Alibaba Druid 连接池**：替代 Boot 默认 HikariCP/Tomcat Pool，提供连接复用、防泄漏，并内置 SQL 监控、Wall 防火墙等运维能力。
+- **`DruidConfiguration` + `spring.datasource.druid`**：自定义 `DataSource` Bean，用 `@ConfigurationProperties` 把 `initial-size`、`max-active`、`filters` 等绑到 Druid 实例。
+- **`DruidWebStatFilter` + 监控 Servlet**：Filter 采集 Web 与 JDBC 关联统计；StatViewServlet 提供 `/druid` 控制台登录页查看 SQL 执行次数、慢 SQL 等。
 
 ## 代码实战（对照源码）
 

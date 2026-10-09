@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- JSP 需 `tomcat-embed-jasper` + `jstl`
-- 视图位于 `src/main/webapp`（传统结构）
-- `ServletInitializer` 支持打成 war 部署到外置 Tomcat
+- **`tomcat-embed-jasper` + `jstl`**：内嵌 Tomcat 默认不编译 JSP，需额外依赖 Jasper 引擎；JSTL 提供标签库，在 JSP 里简化循环、条件输出。
+- **`src/main/webapp`**：JSP 传统目录结构，与 Boot 默认的 `templates/` 不同；视图文件放在 webapp 下由 Jasper 处理。
+- **`ServletInitializer`**：继承 `SpringBootServletInitializer` 并提供 `configure` 方法，使应用可打成 **war** 部署到外置 Tomcat，而不仅是可执行 jar。
 
 ## 代码实战（对照源码）
 

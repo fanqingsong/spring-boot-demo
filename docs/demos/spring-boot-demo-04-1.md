@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- `spring.profiles.active` 指定当前环境（dev/test/prod）
-- 主配置 + `application-{profile}.properties` 覆盖同名键
-- Jackson 日期格式可在主配置统一声明
+- **`spring.profiles.active`**：声明当前激活的环境名（如 dev/test/prod），Spring Boot 据此额外加载 `application-{profile}.properties`，实现同一套代码在不同环境用不同参数运行。
+- **主配置 + `application-{profile}.properties`**：公共项写在主文件，环境差异项写在 profile 文件；同名键以 profile 文件为准，避免把生产密码和开发配置混在一个文件里。
+- **Jackson 日期格式（主配置）**：放在主 `application.properties` 的配置对所有 profile 生效，保证各环境 API 返回 JSON 的日期格式一致，只在 profile 里改端口、数据源等环境相关项。
 
 ## 代码实战（对照源码）
 

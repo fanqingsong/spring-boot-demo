@@ -8,10 +8,10 @@
 
 ## 核心知识点
 
-- `spring-boot-starter-jdbc` + MySQL 驱动
-- 手写 DAO + `JdbcTemplate` 执行 SQL
-- `JdbcDaoImpl` 抽象分页与通用 JDBC 操作
-- 数据源在 profile 配置文件中
+- **`spring-boot-starter-jdbc` + MySQL 驱动**：自动配置 `DataSource` 与 `JdbcTemplate`，应用通过 JDBC 与 MySQL 通信；驱动负责协议与类型转换。
+- **手写 DAO + `JdbcTemplate`**：不引入 JPA/MyBatis，直接用模板 API 执行 SQL 并映射结果，控制力强、适合理解底层或简单 CRUD。
+- **`JdbcDaoImpl` 抽象**：本仓库封装的基类，提供分页、通用查询等，具体 DAO 继承后只写表相关 SQL，减少重复代码。
+- **数据源在 profile 配置中**：数据库 URL/账号按环境写在 `application-dev.properties` 等，与 04-1 多环境方案一致，避免开发库连到生产。
 
 ## 代码实战（对照源码）
 

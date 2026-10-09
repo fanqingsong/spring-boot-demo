@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- `spring-boot-starter-activemq`
-- JmsTemplate 发送、`@JmsListener` 接收
-- 异步解耦：注册/下单后发消息通知
+- **`spring-boot-starter-activemq`**：集成 ActiveMQ 作为 JMS 消息中间件，实现生产者与消费者解耦、异步处理。
+- **`JmsTemplate` / `@JmsListener`**：Template 在代码里发送消息到队列/主题；Listener 标注方法自动消费指定目的地消息。
+- **异步解耦场景**：注册、下单后主流程只发消息，邮件/统计等由消费者稍后处理，提高接口响应速度并削峰填谷。
 
 ## 代码实战（对照源码）
 

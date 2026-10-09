@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- `@ServletComponentScan` 扫描 `@WebServlet` / `@WebFilter` / `@WebListener`
-- 无 web.xml 时注册 Servlet 三大组件的方式
-- Filter 在请求到达 DispatcherServlet 前后执行
+- **`@ServletComponentScan`**：在 Spring Boot 中启用对 `@WebServlet`、`@WebFilter`、`@WebListener` 的扫描注册，替代传统 `web.xml` 声明三大组件。
+- **无 web.xml 注册 Servlet 组件**：Boot 主推 Java 配置与注解；Filter/Servlet 仍走 Servlet 规范生命周期，与 Spring MVC 的 DispatcherServlet 并存。
+- **Filter 执行时机**：在请求进入 DispatcherServlet 之前（及响应返回前）执行链式过滤，常用于编码、鉴权、日志；本模块用 Filter 打日志演示顺序。
 
 ## 代码实战（对照源码）
 

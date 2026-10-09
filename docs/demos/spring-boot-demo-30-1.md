@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- Springfox Swagger2：`@EnableSwagger2` + Docket
-- 扫描 com.roncoo.education.controller 下 /api/**
-- 在线 API 文档与调试
+- **Springfox Swagger2**：通过 `@EnableSwagger2` 与 `Docket` Bean 扫描指定包下的 Controller，自动生成 OpenAPI/Swagger 2 文档。
+- **扫描 `/api/**`**：限制文档只包含 API 前缀的接口，避免把内部或 Actuator 路径暴露到文档 UI。
+- **在线文档与调试**：浏览器打开 swagger-ui 即可查看参数、响应模型并试调接口，前后端联调时减少口头约定与 Postman 手工维护成本。
 
 ## 代码实战（对照源码）
 

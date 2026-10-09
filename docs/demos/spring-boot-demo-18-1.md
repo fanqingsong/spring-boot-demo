@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- `spring-boot-starter-data-mongodb`
-- 文档模型与 MongoRepository / Template
-- `RoncooUserLogMongoDao` 存储日志类文档
+- **`spring-boot-starter-data-mongodb`**：连接 MongoDB，用文档（BSON）模型存数据，schema 灵活，适合日志、内容、非强关系结构。
+- **MongoRepository / Template**：Repository 类似 JPA 的接口式 CRUD；Template 提供更自由的查询与聚合，本模块组件演示插入与查询文档。
+- **`RoncooUserLogMongoDao`**：把用户操作日志存 MongoDB 集合，与关系型日志表对比，理解「同业务不同存储」的选型。
 
 ## 代码实战（对照源码）
 

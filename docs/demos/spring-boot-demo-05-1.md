@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- `logging.config=classpath:logback-roncoo.xml` 指定 Logback 外部 XML
-- 按 profile 区分日志级别与滚动文件 Appender
-- SLF4J 门面 + Logback 实现（Spring Boot 默认）
+- **`logging.config=classpath:logback-roncoo.xml`**：告诉 Spring Boot 不要只用默认 logback 规则，而加载你指定的 XML，从而自定义控制台、文件、滚动策略和包级别。
+- **按 profile 区分日志**：在 logback XML 里用 `springProfile` 等条件为 dev/prod 配不同级别或 Appender，开发可 DEBUG、生产可 WARN 并写滚动文件，互不影响。
+- **SLF4J + Logback**：业务代码只依赖 SLF4J 接口（`LoggerFactory`），具体写日志由 Logback 实现；这是 Spring Boot 默认组合，换实现时需像 05-2 那样排除默认绑定。
 
 ## 代码实战（对照源码）
 

@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- `spring-boot-starter-amqp`
-- Exchange、Queue、RoutingKey 模型
-- `RoncooAmqpComponent` + `AmqpConfiguration`
+- **`spring-boot-starter-amqp`**：集成 RabbitMQ（AMQP 协议），支持更灵活的路由模型 than 简单 JMS 队列。
+- **Exchange、Queue、RoutingKey**：消息先发到交换器，再按绑定规则路由到队列；RoutingKey 决定消息进哪个队列，便于多消费者分流。
+- **配置类 + Component**：配置类声明队列、交换器、绑定关系；Component 负责发送与 `@RabbitListener` 消费，与 21-1 JMS 模式对照学习。
 
 ## 代码实战（对照源码）
 

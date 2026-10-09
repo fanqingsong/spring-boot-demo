@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- Redis 作为集中式缓存（多实例共享）
-- `RedisCacheConfiguration` 定制 CacheManager
-- 与 19-1 本地 EhCache 对比部署场景
+- **Redis 集中式缓存**：缓存条目存在 Redis，多应用实例共享同一 key 空间，一台机器写入后其它实例也能命中，适合集群部署。
+- **`RedisCacheConfiguration`**：定制 Spring Cache 使用的 RedisCacheManager（序列化方式、key 前缀、默认 TTL 等），把注解缓存落到 Redis。
+- **与 19-1 EhCache 对比**：本地缓存简单、无网络开销；Redis 缓存需运维 Redis 但支持水平扩展与统一失效，按部署形态选型。
 
 ## 代码实战（对照源码）
 

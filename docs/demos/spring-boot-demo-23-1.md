@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- HttpClient / RestTemplate 调用第三方 HTTP API
-- `RestRoncooController` 演示 POST JSON、GET 路径参数
-- 与 02-1 提供 REST 相对：本讲是消费远程服务
+- **HttpClient / RestTemplate**：在服务端作为 HTTP **客户端** 调用外部 REST API（与 02-1 提供 API 相反），支持 GET/POST、JSON  body 等。
+- **`RestRoncooController`**：演示接收 JSON、解析 `JsonNode`、再触发本地缓存/DAO 更新，模拟 webhook 或第三方回调集成。
+- **与 02-1 的关系**：02-1 是「对外暴露接口」；本模块是「调用别人接口」，组成完整微服务/集成场景的两半。
 
 ## 代码实战（对照源码）
 

@@ -8,10 +8,10 @@
 
 ## 核心知识点
 
-- `@EnableCaching` 开启缓存抽象
-- `@Cacheable` / `@CachePut` / `@CacheEvict`
-- EhCache 作本地 JVM 缓存
-- `RoncooUserLogCacheImpl` 在 DAO 之上加缓存层
+- **`@EnableCaching`**：打开 Spring 缓存抽象，使 `@Cacheable` 等注解生效，由配置的 CacheManager（本模块为 EhCache）执行存取。
+- **`@Cacheable` / `@CachePut` / `@CacheEvict`**：分别表示「有缓存则不打源」「更新后写缓存」「删除时清缓存」，在 Service 层减少重复读库。
+- **EhCache 本地 JVM 缓存**：数据在单进程内存（可配磁盘溢出），命中快但多实例不共享，适合单节点或读多写少的本地加速。
+- **`RoncooUserLogCacheImpl`**：在 DAO 之上加缓存层，第二次按 id 查询应直接走缓存，控制台不再出现读库 SQL 日志。
 
 ## 代码实战（对照源码）
 

@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- Session 存 Redis，多 Tomcat 实例共享登录态
-- `spring-session` + Redis
-- 无需 sticky session 即可水平扩展
+- **Session 存 Redis**：默认 Session 在单机 Tomcat 内存，多实例无法共享；Spring Session 把 Session 序列化到 Redis，任意节点可读取同一登录态。
+- **`spring-session` + Redis**：引入依赖并配置 Redis 后，对业务代码透明，`HttpSession` API 不变，底层存储换为 Redis。
+- **无需 sticky session**：负载均衡不必把同一用户固定到某台机器，即可水平扩容 Web 层，是分布式登录的常见方案。
 
 ## 代码实战（对照源码）
 

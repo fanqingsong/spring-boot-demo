@@ -13,11 +13,11 @@
 
 ## 核心知识点
 
-- **核心机制**：Spring Boot 通过 `spring.profiles.active` 决定激活哪个 Profile，从而加载对应的环境配置
-- YAML 多文档：用 `---` 分隔不同 profile 段
-- 在同文件内用 `spring.profiles: dev` 绑定段落（本仓库 Spring Boot 1.4.x 写法）
-- 适合把多环境端口等收拢到一个文件
-- 部署时用命令行 / JVM 参数 / 环境变量覆盖 `spring.profiles.active`，不要改源码再打包
+- **`spring.profiles.active`（核心机制）**：决定当前激活的 Profile；Spring Boot 只合并属于该 profile 的配置段，从而切换端口、数据源等而无需改 Java 代码。
+- **YAML 多文档（`---`）**：在一个物理文件里写多段独立文档，每段可绑定不同 profile，适合把 dev/test/prod 收拢到单文件维护（大项目更推荐拆文件，见下文最佳实践）。
+- **`spring.profiles: dev`（1.4.x）**：标记该 `---` 段仅在 profile 为 `dev` 时生效；本仓库使用 Spring Boot 1.4.x 写法，2.4+ 需改用 `spring.config.activate.on-profile`。
+- **单文件多环境**：减少文件数量、方便对照各环境差异；代价是文件变长，且易误提交敏感配置，生产更常用 04-1 的拆分方式。
+- **部署时外部覆盖 active**：通过 `--spring.profiles.active=prod`、`-D` 或环境变量 `SPRING_PROFILES_ACTIVE` 指定环境，同一份 jar 打一次包即可上不同环境，避免为换环境重新编译。
 
 ## 代码实战（对照源码）
 

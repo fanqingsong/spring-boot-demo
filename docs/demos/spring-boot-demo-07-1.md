@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- Thymeleaf 自然模板，可静态预览
-- starter-thymeleaf 自动配置
-- 视图名对应 `templates/*.html`
+- **Thymeleaf 自然模板**：模板本身是合法 HTML，带 `th:*` 属性；未启动服务时也可在浏览器打开静态预览，利于前后端协作。
+- **`starter-thymeleaf`**：与 FreeMarker 类似，自动注册 Thymeleaf 视图解析器，只需加依赖和写 `templates/*.html`。
+- **视图名 → `templates/*.html`**：Controller 返回 `"index"` 对应 `templates/index.html`，语法用 `th:text` 等替代 FreeMarker 的 `${}`。
 
 ## 代码实战（对照源码）
 

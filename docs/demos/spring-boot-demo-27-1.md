@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- `spring-boot-starter-actuator` 健康与指标端点
-- `spring-boot-starter-security` 保护敏感端点
-- 生产环境暴露 health 等需鉴权
+- **`spring-boot-starter-actuator`**：暴露 `/health`、`/metrics` 等管理端点，供监控、K8s 探针、运维脚本检查应用存活与状态。
+- **`spring-boot-starter-security`**：为 Actuator（及整站）加认证授权，防止未授权访问 env、shutdown 等敏感端点。
+- **生产暴露策略**：只开放必要端点并对 health 等做鉴权，避免把配置、环境变量泄露到公网；本模块演示 401 未授权行为。
 
 ## 代码实战（对照源码）
 

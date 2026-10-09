@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- 打包：spring-boot-maven-plugin 可执行 jar
-- Druid 监控、Swagger 等生产环境开关
-- 与 30-1 技术栈延续，侧重部署与运维
+- **`spring-boot-maven-plugin` 可执行 jar**：打包为「fat jar」，内嵌依赖与主清单，生产用 `java -jar` 启动，无需在服务器单独装 Tomcat。
+- **生产环境开关**：Druid 控制台、Swagger UI 等在 prod profile 下应关闭或强鉴权/IP 白名单，避免调试入口暴露在生产公网。
+- **部署与运维侧重**：在 30-1 技术栈上补充启动脚本、JVM 参数、`spring.profiles.active=prod`，完成从开发 demo 到可上线运行的最后一环。
 
 ## 代码实战（对照源码）
 

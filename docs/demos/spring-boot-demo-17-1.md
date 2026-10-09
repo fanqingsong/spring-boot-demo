@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- `spring-boot-starter-data-redis`
-- `RedisTemplate` 或封装 Component 操作键值
-- 与关系库并存：业务数据 MySQL/H2，缓存/会话放 Redis
+- **`spring-boot-starter-data-redis`**：自动配置 Redis 连接与 `RedisTemplate`，用于键值存储、缓存、分布式锁等内存级高速读写。
+- **`RedisTemplate` / 封装 Component**：Template 提供 opsForValue/List 等 API；Component 再封装常用 set/get，Controller 只调业务语义方法。
+- **与关系库并存**：MySQL/H2 存持久业务数据，Redis 存热点、会话或计数；各管其责，是本系列后续缓存、Session 模块的基础。
 
 ## 代码实战（对照源码）
 

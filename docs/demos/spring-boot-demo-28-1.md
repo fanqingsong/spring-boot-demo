@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- `mybatis-spring-boot-starter`
-- Mapper 接口 + XML SQL 映射
-- 包名 com.roncoo.education，与前期 example 项目并列演进
+- **`mybatis-spring-boot-starter`**：自动配置 SqlSessionFactory、Mapper 扫描，在 Spring Boot 里用 MyBatis 访问数据库，替代或补充 JdbcTemplate/JPA。
+- **Mapper 接口 + SQL 映射**：接口方法名与 XML/注解中的 statement id 对应；SQL 写在 XML 或注解上，Java 侧只声明方法签名，便于复杂 SQL 维护。
+- **包名 `com.roncoo.education`**：本模块起教育线包名与前期 `example` 演示并列，表示系列后期工程结构演进，不影响 MyBatis 机制本身。
 
 ## 代码实战（对照源码）
 

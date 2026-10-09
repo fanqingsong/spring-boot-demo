@@ -8,10 +8,10 @@
 
 ## 核心知识点
 
-- YAML 层级缩进表示配置树，等价于 properties 的点号键
-- Spring Boot 同时支持 `.properties` 与 `.yaml`（同键时遵循优先级规则）
-- YAML 中 `${roncoo.name}` 引用同文件其他键
-- `spring.jackson.*` 全局 JSON 日期格式与时区
+- **YAML 层级缩进**：用缩进表示父子关系，等价于 properties 里的 `a.b.c=value`；适合层次多、重复前缀长的配置，可读性更好。
+- **`.properties` 与 `.yaml` 并存**：Spring Boot 两种格式都支持；若同一键在多处定义，按 Spring Boot 的配置优先级规则决定最终值（不是「YAML 一定覆盖 properties」的简单规则，需结合路径与 profile）。
+- **YAML 内 `${roncoo.name}`**：与 properties 相同，在解析阶段引用同文件或其它已加载配置中的键，用于组合描述、默认值等。
+- **`spring.jackson.*`**：全局配置 HTTP JSON 序列化行为（日期格式、时区等），影响所有 `@RestController` 返回 JSON 时的日期字段展示，无需在每个 DTO 上单独注解。
 
 ## 代码实战（对照源码）
 

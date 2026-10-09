@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- JVM 远程调试参数：`-agentlib:jdwp=...`
-- IDE Remote Debug 连接已部署进程
-- 本仓库仅 README，无业务源码
+- **JDWP 远程调试参数**：`-agentlib:jdwp=...` 让 JVM 监听调试端口，IDE 通过 Debug 协议 attach 到**已运行**的进程（含远程服务器上的 jar）。
+- **IDE Remote Debug**：配置 Host/Port 与 launch 模式为 Remote，在断点处查看变量、单步执行，用于排查测试/预发环境问题。
+- **本仓库无业务源码**：模块以 README/操作为主，重点是运维侧打开调试端口的安全边界（仅内网、用完即关），而非 Spring 特性本身。
 
 ## 代码实战（对照源码）
 

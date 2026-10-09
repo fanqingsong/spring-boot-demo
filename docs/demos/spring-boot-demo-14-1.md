@@ -8,10 +8,10 @@
 
 ## 核心知识点
 
-- `spring-boot-starter-data-jpa`
-- 实体 `@Entity` + Repository 接口继承 `JpaRepository`
-- Hibernate 自动建表/更新（视配置而定）
-- 在 13-1 基础上增加 JPA 实体 `RoncooUserLog`
+- **`spring-boot-starter-data-jpa`**：集成 Hibernate 与 Spring Data JPA，用实体映射表、用 Repository 接口完成 CRUD，多数 SQL 由框架生成。
+- **`@Entity` + `JpaRepository`**：实体类对应表结构；Repository 继承 `JpaRepository<实体, 主键类型>` 即拥有 save/findAll 等，无需写实现类。
+- **Hibernate DDL**：通过 `spring.jpa.hibernate.ddl-auto` 等控制在启动时自动建表/更新 schema（开发常用，生产需谨慎）。
+- **`RoncooUserLog` 实体**：在 13-1 JDBC 用户表基础上增加 JPA 管理的日志表，演示同一项目中 JDBC 与 JPA 可并存（本模块侧重 JPA 侧）。
 
 ## 代码实战（对照源码）
 

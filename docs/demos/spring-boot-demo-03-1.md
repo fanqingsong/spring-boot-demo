@@ -8,10 +8,10 @@
 
 ## 核心知识点
 
-- classpath 下 `application.properties` 与 `config/application.properties` 的加载顺序（config 子目录优先级更高）
-- 自定义前缀属性 `roncoo.*`
-- 占位符：`${random.value}`、`${random.int}`、`${roncoo.name}` 引用
-- `@Value` 注入配置到 Controller 字段
+- **配置加载顺序**：Spring Boot 会按固定顺序加载多处 `application.properties`；`classpath:config/` 下的文件优先级高于根目录，后加载的同键会覆盖先加载的，便于在不改默认文件的情况下本地覆盖。
+- **自定义前缀 `roncoo.*`**：任意业务或演示用配置键，与框架的 `spring.*`、`server.*` 一样注入到 Environment；前缀只是命名约定，便于分组和 `@ConfigurationProperties` 绑定。
+- **占位符 `${...}`**：在配置文件中引用其它键或内置随机值（如 `${random.value}`、`${roncoo.name}`），启动时由 Spring 解析成最终字符串，避免重复写死相同内容。
+- **`@Value`**：把 Environment 中的单个配置项注入到 Bean 字段或方法参数；本模块在 Controller 中用来验证配置是否已成功读入并在接口响应中展示。
 
 ## 代码实战（对照源码）
 

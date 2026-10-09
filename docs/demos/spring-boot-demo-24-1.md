@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- `spring-boot-starter-mail`
-- JavaMailSender 发送简单邮件与 MIME 邮件
-- FreeMarker 邮件模板 + 多 SMTP 账号轮询
+- **`spring-boot-starter-mail`**：自动配置 `JavaMailSender`，通过 SMTP 发送邮件，用于通知、验证码、报表等。
+- **简单邮件与 MIME 邮件**：纯文本/quick 发送 vs 支持 HTML、附件、内嵌资源的 MIME 结构，满足不同展示需求。
+- **FreeMarker 模板 + 多 SMTP 账号**：用模板渲染 HTML 正文；多账号实现轮询或 failover，避免单邮箱限流导致发送失败。
 
 ## 代码实战（对照源码）
 

@@ -8,10 +8,10 @@
 
 ## 核心知识点
 
-- Spring Boot 默认错误页 `/error`
-- `@ControllerAdvice` + `@ExceptionHandler` 全局异常
-- FreeMarker 自定义 `templates/error/` 错误视图
-- `BizExcepiton` 将异常信息放入 Model 展示
+- **默认 `/error`**：Spring Boot 内置错误处理控制器，未捕获异常或未找到资源时会转发到 `/error`，可返回 Whitelabel 页或自定义页。
+- **`@ControllerAdvice` + `@ExceptionHandler`**：在全局统一捕获指定异常类型，决定返回 JSON 还是视图，避免每个 Controller 重复 try-catch。
+- **`templates/error/` 自定义错误视图**：按状态码或错误名放置 FreeMarker 模板（如 `500.ftl`），给用户友好的错误页而非堆栈。
+- **`BizExcepiton`（全局处理类）**：本模块示例把异常信息放入 Model 再返回 `error/500` 等视图，演示如何把技术错误转化为页面可展示的内容。
 
 ## 代码实战（对照源码）
 

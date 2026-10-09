@@ -8,9 +8,9 @@
 
 ## 核心知识点
 
-- `MultipartFile` 接收上传文件
-- `spring.http.multipart.*` 大小与临时目录
-- `transferTo(File)` 保存到磁盘
+- **`MultipartFile`**：Spring MVC 对上传文件的抽象，封装原始文件名、大小、输入流；Controller 方法参数接收 multipart/form-data 中的文件域。
+- **`spring.http.multipart.*`**：限制单文件/总请求大小、临时目录等，防止超大上传占满磁盘或内存，超限会拒绝请求。
+- **`transferTo(File)`**：把上传流保存到指定路径；本模块用 UUID 重命名避免文件名冲突，适合演示本地落盘（生产常改为对象存储）。
 
 ## 代码实战（对照源码）
 

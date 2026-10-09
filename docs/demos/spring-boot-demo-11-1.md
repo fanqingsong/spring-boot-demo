@@ -8,10 +8,10 @@
 
 ## 核心知识点
 
-- 跨域：浏览器限制不同源 AJAX
-- `WebMvcConfigurerAdapter.addCorsMappings` 全局 CORS
-- `@CrossOrigin` 注解在 Controller/方法上
-- `CustomCorsConfiguration` / `CustomCorsConfiguration2` 两种配置方式
+- **浏览器同源策略与跨域**：前端页面与 API 不同源（协议/域名/端口任一不同）时，浏览器默认禁止 JS 读跨域响应，需服务端返回 CORS 头放行。
+- **`WebMvcConfigurerAdapter.addCorsMappings`**：在 Java 配置里全局定义允许的来源、方法、Header，一次配置对所有匹配的 URL 生效。
+- **`@CrossOrigin`**：标注在 Controller 类或方法上，细粒度开放单个接口的跨域，适合与全局配置组合或覆盖。
+- **两种配置类示例**：`CustomCorsConfiguration` 与 `CustomCorsConfiguration2` 演示不同写法（实现接口 vs `@Bean`），效果都是向响应添加 `Access-Control-*` 头。
 
 ## 代码实战（对照源码）
 

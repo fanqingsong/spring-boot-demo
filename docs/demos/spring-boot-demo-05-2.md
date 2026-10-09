@@ -12,11 +12,11 @@
 
 ## 核心知识点
 
-- Spring Boot 默认日志实现是 **Logback**（由 `spring-boot-starter-web` 传递引入 `spring-boot-starter-logging`）
-- 同一应用的 classpath 上**只能有一种** SLF4J 绑定；Logback 与 Log4j2 同时存在会冲突
-- 排除 `spring-boot-starter-logging`，引入 `spring-boot-starter-log4j2`
-- `logging.config` 指向 `log4j2-*.xml`
-- Controller 仍使用 `LoggerFactory.getLogger`（SLF4J），底层已换成 Log4j2
+- **默认 Logback**：`spring-boot-starter-web` 传递引入 `spring-boot-starter-logging`，启动即具备控制台日志，无需手写 Log4j/Logback 依赖。
+- **单一 SLF4J 绑定**：SLF4J 在运行时只能绑定一种实现；classpath 上 Logback 与 Log4j2 并存会导致启动警告或行为异常，换 Log4j2 必须先排除 logging starter。
+- **排除 logging + 引入 log4j2 starter**：在 `pom.xml` 中排除 `spring-boot-starter-logging` 并添加 `spring-boot-starter-log4j2`，由 Boot 拉齐 Log4j2 与 SLF4J 桥接依赖。
+- **`logging.config` 指向 `log4j2-*.xml`**：与 Logback 类似，用外部 XML 定义 Appender、级别；Log4j2 可配置异步 Logger、热更新等（详见下文「为什么要用 Log4j2」）。
+- **业务仍用 SLF4J**：Controller 里仍是 `LoggerFactory.getLogger`，只换底层实现，业务代码不感知 Log4j2，便于以后再次切换实现。
 
 ## 为什么要用 Log4j2
 

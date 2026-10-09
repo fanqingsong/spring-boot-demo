@@ -8,10 +8,10 @@
 
 ## 核心知识点
 
-- `spring-boot-starter-freemarker` 自动配置视图解析器
-- `@Controller` + 返回字符串视图名（非 `@RestController`）
-- `ModelMap` / `Model` 向模板传参
-- 模板位置默认 `classpath:/templates/` 后缀 `.ftl`
+- **`spring-boot-starter-freemarker`**：自动配置 FreeMarker 引擎与 Spring MVC 视图解析器，Controller 返回视图名即可渲染 `.ftl` 模板为 HTML。
+- **`@Controller`（非 RestController）**：方法返回值当作**视图逻辑名**，由 ViewResolver 找模板；与 `@RestController` 直接写 JSON 响应体是两种 Web 风格。
+- **`ModelMap` / `Model`**：在跳转视图前把键值对放入模型，模板里用 `${title}` 等占位符展示，实现服务端渲染页面。
+- **模板路径 `classpath:/templates/*.ftl`**：Boot 约定默认目录与后缀，返回 `"index"` 即解析为 `templates/index.ftl`，无需 web.xml 或手动配置 ViewResolver。
 
 ## 代码实战（对照源码）
 

@@ -8,12 +8,12 @@
 
 ## 核心知识点
 
-- Spring Boot 最小 Web 依赖：`spring-boot-starter-web` 内嵌 Tomcat
-- `@SpringBootApplication` 组合了配置、自动装配与组件扫描
-- `@RestController` 返回值直接作为 HTTP 响应体（JSON/字符串）
-- `@RequestParam` 绑定查询参数 / 表单参数
-- `@PathVariable` 绑定 URL 路径片段
-- `spring-boot-devtools` 开发热重启（可选）
+- **`spring-boot-starter-web`**：Spring Boot 的 Web 起步依赖，自动引入 Spring MVC、Jackson 与内嵌 Tomcat，使应用以 `java -jar` 即可监听 HTTP，无需单独安装 Tomcat。
+- **`@SpringBootApplication`**：组合了 `@Configuration`、`@EnableAutoConfiguration`、`@ComponentScan`，负责启动 Spring 容器、加载自动配置，并扫描当前包及子包下的 `@Component`、`@Controller` 等 Bean。
+- **`@RestController`**：等价于 `@Controller` + `@ResponseBody`，方法返回值直接写入 HTTP 响应体（字符串或 JSON），不会再去解析视图模板。
+- **`@RequestParam`**：把 URL 查询参数（`?name=xx`）或表单字段绑定到方法参数；缺少必填参数时通常返回 400。
+- **`@PathVariable`**：把 URL 路径中的占位段（如 `/get/{id}`）绑定到方法参数，用于 RESTful 风格的路径传参。
+- **`spring-boot-devtools`**（可选）：开发时监控 classpath 变化并快速重启应用，缩短改代码后的验证周期（生产环境不应依赖它）。
 
 ## 代码实战（对照源码）
 
