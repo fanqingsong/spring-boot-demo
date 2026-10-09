@@ -8,9 +8,22 @@
 
 ## 核心知识点
 
-- **`tomcat-embed-jasper` + `jstl`**：内嵌 Tomcat 默认不编译 JSP，需额外依赖 Jasper 引擎；JSTL 提供标签库，在 JSP 里简化循环、条件输出。
-- **`src/main/webapp`**：JSP 传统目录结构，与 Boot 默认的 `templates/` 不同；视图文件放在 webapp 下由 Jasper 处理。
-- **`ServletInitializer`**：继承 `SpringBootServletInitializer` 并提供 `configure` 方法，使应用可打成 **war** 部署到外置 Tomcat，而不仅是可执行 jar。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **`tomcat-embed-jasper` + `jstl`**
+  - **为何出现**：大量老项目用 JSP；内嵌 Tomcat 默认不包含 JSP 编译器，JSP 只是历史兼容需求。
+  - **解决什么问题**：补齐 Jasper 与 JSTL，让遗留 JSP 能在 Boot 内嵌容器跑（官方仍更推荐 Thymeleaf）。
+  - **若没有会怎样**：JSP 无法编译，访问页面 404 或 500，老代码无法平滑迁移到 Boot。
+
+- **`src/main/webapp`**
+  - **为何出现**：JSP/Servlet 规范传统把 WAR 根放在 webapp；与 Boot 的 `templates/` 是两套生态。
+  - **解决什么问题**：JSP 放 webapp，符合旧 Maven WAR 结构，降低从 SSM 迁移成本。
+  - **若没有会怎样**：JSP 误放 templates 下不会被 Jasper 处理，团队规范混乱。
+
+- **`ServletInitializer`**
+  - **为何出现**：企业机房已有标准外置 Tomcat/WAS，运维不接受 fat jar 新玩法，需要 WAR 部署。
+  - **解决什么问题**：继承 `SpringBootServletInitializer` 提供 war 入口，同一套代码 jar 或 war 两种交付。
+  - **若没有会怎样**：只能 fat jar，无法部署到公司统一 Tomcat，架构评审可能被拒。
 
 ## 代码实战（对照源码）
 

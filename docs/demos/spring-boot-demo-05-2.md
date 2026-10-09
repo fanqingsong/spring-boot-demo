@@ -12,11 +12,32 @@
 
 ## 核心知识点
 
-- **默认 Logback**：`spring-boot-starter-web` 传递引入 `spring-boot-starter-logging`，启动即具备控制台日志，无需手写 Log4j/Logback 依赖。
-- **单一 SLF4J 绑定**：SLF4J 在运行时只能绑定一种实现；classpath 上 Logback 与 Log4j2 并存会导致启动警告或行为异常，换 Log4j2 必须先排除 logging starter。
-- **排除 logging + 引入 log4j2 starter**：在 `pom.xml` 中排除 `spring-boot-starter-logging` 并添加 `spring-boot-starter-log4j2`，由 Boot 拉齐 Log4j2 与 SLF4J 桥接依赖。
-- **`logging.config` 指向 `log4j2-*.xml`**：与 Logback 类似，用外部 XML 定义 Appender、级别；Log4j2 可配置异步 Logger、热更新等（详见下文「为什么要用 Log4j2」）。
-- **业务仍用 SLF4J**：Controller 里仍是 `LoggerFactory.getLogger`，只换底层实现，业务代码不感知 Log4j2，便于以后再次切换实现。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **默认 Logback**
+  - **为何出现**：Boot 团队选型 Logback 作为默认，保证 `starter-web` 拉完就能打日志，零配置可运行。
+  - **解决什么问题**：新手不加任何 logging 依赖即可在控制台看到启动日志和 Controller 输出。
+  - **若没有会怎样**：每个项目从零配日志实现，起步依赖膨胀，初学者连「有没有 log」都要先折腾 pom。
+
+- **单一 SLF4J 绑定**
+  - **为何出现**：SLF4J 设计为桥接层，运行时只能选一个实现写文件，多个绑定会互相抢或重复输出。
+  - **解决什么问题**：换 Log4j2 时先排除 Logback，保证 classpath 干净，日志行为可预测。
+  - **若没有会怎样**：同时存在 Logback 与 Log4j2 时出现「Static binding」警告、丢日志或性能异常，极难排查。
+
+- **排除 logging + 引入 log4j2 starter**
+  - **为何出现**：高并发场景需要 Log4j2 异步等能力，必须在依赖层面替换默认栈。
+  - **解决什么问题**：Maven exclusion + log4j2 starter 一次性引入正确版本的 log4j-core、slf4j-impl。
+  - **若没有会怎样**：手动加 log4j jar 版本与 Boot 不匹配，或没排除旧绑定，启动失败或 silent failure。
+
+- **`logging.config` 指向 `log4j2-*.xml`**
+  - **为何出现**：换实现后仍需自定义 appenders、异步、热更新，不能仅靠 application.properties 几条键。
+  - **解决什么问题**：与 05-1 一样用外部 XML 精细控制 Log4j2 行为（含 monitorInterval）。
+  - **若没有会怎样**：仍用默认 log4j2 简单配置，无法发挥换 Log4j2 的性能与运维优势。
+
+- **业务仍用 SLF4J**
+  - **为何出现**：若业务绑 Log4j2 API，下次换实现又要大改；门面模式是为解耦实现。
+  - **解决什么问题**：Controller 继续 `LoggerFactory.getLogger`，只换 classpath 实现，迁移成本低。
+  - **若没有会怎样**：业务代码 import org.apache.logging.log4j.Logger，与 SLF4J 生态工具不兼容，团队规范难统一。
 
 ## 为什么要用 Log4j2
 

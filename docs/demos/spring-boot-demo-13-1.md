@@ -8,10 +8,27 @@
 
 ## 核心知识点
 
-- **`spring-boot-starter-jdbc` + MySQL 驱动**：自动配置 `DataSource` 与 `JdbcTemplate`，应用通过 JDBC 与 MySQL 通信；驱动负责协议与类型转换。
-- **手写 DAO + `JdbcTemplate`**：不引入 JPA/MyBatis，直接用模板 API 执行 SQL 并映射结果，控制力强、适合理解底层或简单 CRUD。
-- **`JdbcDaoImpl` 抽象**：本仓库封装的基类，提供分页、通用查询等，具体 DAO 继承后只写表相关 SQL，减少重复代码。
-- **数据源在 profile 配置中**：数据库 URL/账号按环境写在 `application-dev.properties` 等，与 04-1 多环境方案一致，避免开发库连到生产。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **`spring-boot-starter-jdbc` + MySQL 驱动**
+  - **为何出现**：应用访问数据库是常态；JDBC 是 Java 标准，但裸 JDBC 连接管理易错。
+  - **解决什么问题**：Boot 自动配 DataSource + JdbcTemplate，驱动单独声明即可连 MySQL。
+  - **若没有会怎样**：自己 new Connection 不池化，高并发下连接耗尽；或忘记 close 导致泄漏。
+
+- **手写 DAO + `JdbcTemplate`**
+  - **为何出现**：JPA 对复杂 SQL/legacy 库有时过重；团队需要看清 SQL 与结果映射。
+  - **解决什么问题**：模板方法执行 SQL、处理 ? 占位符和 RowMapper，比纯 JDBC 简洁又比 ORM 透明。
+  - **若没有会怎样**：字符串拼接 SQL 易注入；或 JPA 生成 SQL 不可控，DBA 无法优化。
+
+- **`JdbcDaoImpl` 抽象**
+  - **为何出现**：多个 DAO 重复分页、count、列映射样板，违反 DRY。
+  - **解决什么问题**：基类封装通用 JDBC 操作，子类只关心表字段与 SQL 片段。
+  - **若没有会怎样**：每个 DAO 复制粘贴分页逻辑，改一页大小要改 N 处，bug 反复出现。
+
+- **数据源在 profile 配置中**
+  - **为何出现**：dev 连本地库、prod 连集群，URL/账号必须随环境变。
+  - **解决什么问题**：与 04-1 一致，profile 文件放 jdbc 配置，避免误连生产。
+  - **若没有会怎样**：jdbc url 写死在主配置，测试环境指向生产，一次误操作删库。
 
 ## 代码实战（对照源码）
 

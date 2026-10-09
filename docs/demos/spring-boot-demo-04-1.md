@@ -8,9 +8,22 @@
 
 ## 核心知识点
 
-- **`spring.profiles.active`**：声明当前激活的环境名（如 dev/test/prod），Spring Boot 据此额外加载 `application-{profile}.properties`，实现同一套代码在不同环境用不同参数运行。
-- **主配置 + `application-{profile}.properties`**：公共项写在主文件，环境差异项写在 profile 文件；同名键以 profile 文件为准，避免把生产密码和开发配置混在一个文件里。
-- **Jackson 日期格式（主配置）**：放在主 `application.properties` 的配置对所有 profile 生效，保证各环境 API 返回 JSON 的日期格式一致，只在 profile 里改端口、数据源等环境相关项。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **`spring.profiles.active`**
+  - **为何出现**：开发、测试、生产的数据库、端口、密钥不同，全写进一份配置易误用生产库或泄露密码。
+  - **解决什么问题**：用 profile 名切换环境专用配置文件，同一份代码多环境运行。
+  - **若没有会怎样**：为上线改配置文件再打包，或 dev 连错生产库，造成数据事故或泄露。
+
+- **主配置 + `application-{profile}.properties`**
+  - **为何出现**：公共项（Jackson、应用名）各环境相同，差异项（port、jdbc）应隔离，否则重复维护。
+  - **解决什么问题**：主文件放公共 + 默认 active；profile 文件只放差异，合并后得到完整 Environment。
+  - **若没有会怎样**：一个巨型 properties 里 if/注释区分环境，极易删错行；或 prod 密码被 commit 到仓库。
+
+- **Jackson 日期格式（主配置）**
+  - **为何出现**：各环境 API 契约应一致，日期格式不应因 profile 不同而变。
+  - **解决什么问题**：在主配置声明一次，所有 profile 共享，环境只改基础设施参数。
+  - **若没有会怎样**：每个 profile 重复 jackson 配置，漏配某一环境导致测试通过、生产 JSON 格式不同。
 
 ## 代码实战（对照源码）
 

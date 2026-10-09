@@ -8,9 +8,22 @@
 
 ## 核心知识点
 
-- **`logging.config=classpath:logback-roncoo.xml`**：告诉 Spring Boot 不要只用默认 logback 规则，而加载你指定的 XML，从而自定义控制台、文件、滚动策略和包级别。
-- **按 profile 区分日志**：在 logback XML 里用 `springProfile` 等条件为 dev/prod 配不同级别或 Appender，开发可 DEBUG、生产可 WARN 并写滚动文件，互不影响。
-- **SLF4J + Logback**：业务代码只依赖 SLF4J 接口（`LoggerFactory`），具体写日志由 Logback 实现；这是 Spring Boot 默认组合，换实现时需像 05-2 那样排除默认绑定。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **`logging.config=classpath:logback-roncoo.xml`**
+  - **为何出现**：默认 logback 只打控制台，生产需要按天滚动、分目录、分级别；Boot 允许外挂完整 logback 配置。
+  - **解决什么问题**：指定自定义 XML，实现 Console + RollingFile、按包名 DEBUG 等，而不改 Java 代码。
+  - **若没有会怎样**：日志全堆 stdout，磁盘撑爆或丢日志；无法按环境区分级别，生产 DEBUG 泄露敏感信息。
+
+- **按 profile 区分日志**
+  - **为何出现**：dev 需要详细 SQL/请求日志，prod 需要 WARN 与审计，同一套 appender 无法满足。
+  - **解决什么问题**：logback 的 `springProfile` 等为 dev/prod 配不同 appender/level，一份 XML 多环境。
+  - **若没有会怎样**：生产开 DEBUG 性能差且日志含隐私；开发开 ERROR 又难以排查问题。
+
+- **SLF4J + Logback**
+  - **为何出现**：历史上 Log4j 1、JUL、commons-logging 并存，库之间日志 API 不统一，绑定冲突频发。
+  - **解决什么问题**：SLF4J 作门面，业务只调一个 API；Logback 作默认实现，Boot 开箱即用。
+  - **若没有会怎样**：业务直接绑具体日志库，换 Log4j2（见 05-2）要改遍全项目 import。
 
 ## 代码实战（对照源码）
 

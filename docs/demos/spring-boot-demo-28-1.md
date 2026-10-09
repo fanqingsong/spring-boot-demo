@@ -8,9 +8,22 @@
 
 ## 核心知识点
 
-- **`mybatis-spring-boot-starter`**：自动配置 SqlSessionFactory、Mapper 扫描，在 Spring Boot 里用 MyBatis 访问数据库，替代或补充 JdbcTemplate/JPA。
-- **Mapper 接口 + SQL 映射**：接口方法名与 XML/注解中的 statement id 对应；SQL 写在 XML 或注解上，Java 侧只声明方法签名，便于复杂 SQL 维护。
-- **包名 `com.roncoo.education`**：本模块起教育线包名与前期 `example` 演示并列，表示系列后期工程结构演进，不影响 MyBatis 机制本身。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **`mybatis-spring-boot-starter`**
+  - **为何出现**：JPA 对复杂 SQL、存量 MyBatis 项目不友好；需要 Boot 官方式的一键集成 MyBatis。
+  - **解决什么问题**：自动 SqlSessionFactory、Mapper 扫描，与 Spring 事务、DataSource 一体。
+  - **若没有会怎样**：纯 MyBatis 自己管 SqlSession 生命周期，易漏 close，与 Spring 事务不同步。
+
+- **Mapper 接口 + SQL 映射**
+  - **为何出现**：SQL 是 DBA/开发者核心资产，应集中管理而非散落在 Java 字符串。
+  - **解决什么问题**：接口 + XML/注解 SQL，动态 SQL、结果映射清晰，适合复杂查询。
+  - **若没有会怎样**：全 ORM 生成 SQL 黑盒，慢查询难优化；或 JDBC 字符串拼接难维护。
+
+- **包名 `com.roncoo.education`**
+  - **为何出现**：系列后期工程统一包名，与早期 example 并存，反映真实仓库演进。
+  - **解决什么问题**：提醒启动类与 Mapper 扫描包一致，避免「有两个 main 跑错类」类问题。
+  - **若没有会怎样**：扫错包 Mapper 未注册，启动不报错但注入 null 或 NoSuchBean，排查困难。
 
 ## 代码实战（对照源码）
 

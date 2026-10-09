@@ -8,9 +8,22 @@
 
 ## 核心知识点
 
-- **`spring-boot-maven-plugin` 可执行 jar**：打包为「fat jar」，内嵌依赖与主清单，生产用 `java -jar` 启动，无需在服务器单独装 Tomcat。
-- **生产环境开关**：Druid 控制台、Swagger UI 等在 prod profile 下应关闭或强鉴权/IP 白名单，避免调试入口暴露在生产公网。
-- **部署与运维侧重**：在 30-1 技术栈上补充启动脚本、JVM 参数、`spring.profiles.active=prod`，完成从开发 demo 到可上线运行的最后一环。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **`spring-boot-maven-plugin` 可执行 jar**
+  - **为何出现**：传统 war 部署依赖容器版本；云原生更倾向单 artifact 内含依赖与启动类。
+  - **解决什么问题**：repackage 成 fat jar，`java -jar` 一键启动，与开发环境一致。
+  - **若没有会怎样**：漏 repackage 得到瘦 jar，线上 ClassNotFound；或仍依赖外置 Tomcat 增加运维复杂度。
+
+- **生产环境开关**
+  - **为何出现**：Druid/Swagger 等开发利器在生产是攻击面，Profile 必须关或加固。
+  - **解决什么问题**：prod 关闭或 IP/强密码限制控制台与 swagger，符合安全基线。
+  - **若没有会怎样**：生产 swagger 暴露全部 API、Druid 弱口令，渗透测试必过、合规必挂。
+
+- **部署与运维侧重**
+  - **为何出现**：能跑 demo ≠ 能上线；需要脚本、JVM 参数、profile 与监控配合。
+  - **解决什么问题**：31 在 30 栈上强调 package、prod profile、启动脚本，完成交付闭环。
+  - **若没有会怎样**：直接 mvn run 思维上线，无 heap/GC/profile 配置，一出流量就 OOM 或连错库。
 
 ## 代码实战（对照源码）
 

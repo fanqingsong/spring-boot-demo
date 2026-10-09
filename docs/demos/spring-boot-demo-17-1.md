@@ -8,9 +8,22 @@
 
 ## 核心知识点
 
-- **`spring-boot-starter-data-redis`**：自动配置 Redis 连接与 `RedisTemplate`，用于键值存储、缓存、分布式锁等内存级高速读写。
-- **`RedisTemplate` / 封装 Component**：Template 提供 opsForValue/List 等 API；Component 再封装常用 set/get，Controller 只调业务语义方法。
-- **与关系库并存**：MySQL/H2 存持久业务数据，Redis 存热点、会话或计数；各管其责，是本系列后续缓存、Session 模块的基础。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **`spring-boot-starter-data-redis`**
+  - **为何出现**：磁盘 DB 延迟 ms 级；热点读、会话、计数需要 μs 级内存存储，Redis 成为事实标准。
+  - **解决什么问题**：自动配置连接工厂与 RedisTemplate，Java 侧像操作 Map 一样操作 Redis。
+  - **若没有会怎样**：自己维护 Jedis 连接池、序列化，易错且与 Boot 生命周期不同步。
+
+- **`RedisTemplate` / 封装 Component**
+  - **为何出现**：Template API 偏底层；业务希望 `setUserCache` 这类语义清晰的方法。
+  - **解决什么问题**：Component 封装 key 规范、TTL、序列化，Controller 不碰 Redis 细节。
+  - **若没有会怎样**：Controller 里散落 redis key 字符串，key 冲突、无 TTL 内存打满。
+
+- **与关系库并存**
+  - **为何出现**：Redis 非关系型、易失，不能替代 MySQL 存订单；架构上是缓存/辅助存储。
+  - **解决什么问题**：MySQL 权威数据，Redis 加速读/暂存，为 19/20/25 模块打基础。
+  - **若没有会怎样**：什么都放 Redis 不设持久化，宕机丢登录/订单；或不用 Redis 所有读打穿 DB。
 
 ## 代码实战（对照源码）
 

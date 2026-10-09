@@ -8,12 +8,37 @@
 
 ## 核心知识点
 
-- **`spring-boot-starter-web`**：Spring Boot 的 Web 起步依赖，自动引入 Spring MVC、Jackson 与内嵌 Tomcat，使应用以 `java -jar` 即可监听 HTTP，无需单独安装 Tomcat。
-- **`@SpringBootApplication`**：组合了 `@Configuration`、`@EnableAutoConfiguration`、`@ComponentScan`，负责启动 Spring 容器、加载自动配置，并扫描当前包及子包下的 `@Component`、`@Controller` 等 Bean。
-- **`@RestController`**：等价于 `@Controller` + `@ResponseBody`，方法返回值直接写入 HTTP 响应体（字符串或 JSON），不会再去解析视图模板。
-- **`@RequestParam`**：把 URL 查询参数（`?name=xx`）或表单字段绑定到方法参数；缺少必填参数时通常返回 400。
-- **`@PathVariable`**：把 URL 路径中的占位段（如 `/get/{id}`）绑定到方法参数，用于 RESTful 风格的路径传参。
-- **`spring-boot-devtools`**（可选）：开发时监控 classpath 变化并快速重启应用，缩短改代码后的验证周期（生产环境不应依赖它）。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **`spring-boot-starter-web`**
+  - **为何出现**：传统 Java Web 需要单独安装 Tomcat、手写大量 XML 才能把 Servlet/Spring 跑起来，部署和依赖版本也容易打架。
+  - **解决什么问题**：一条 Maven 依赖拉齐 Web 栈 + 内嵌容器，本地 `mvn spring-boot:run` 或 `java -jar` 就能对外提供 HTTP 服务。
+  - **若没有会怎样**：你得自己装外置 Tomcat、配 WAR、对齐 Spring 与 Servlet 版本，一个 REST 小项目也要很多样板步骤，学习曲线陡。
+
+- **`@SpringBootApplication`**
+  - **为何出现**：Spring 项目过去要拆成多个 XML/Java 配置：扫哪些包、开哪些自动配置、哪里是配置类，新人常漏配导致 Bean 找不到。
+  - **解决什么问题**：一个注解等价于「配置 + 自动装配 + 组件扫描」，启动类即入口，约定大于配置。
+  - **若没有会怎样**：启动类要写多段注解或 XML，Controller 放错包就不会注册，排查「404 / No mapping」会浪费大量时间。
+
+- **`@RestController`**
+  - **为何出现**：前后端分离和移动端兴起后，接口主要返回 JSON 而不是 JSP 页面；需要明确区分「返回视图」和「返回数据」。
+  - **解决什么问题**：方法返回值直接序列化为响应体（JSON/文本），适合 REST API，不用写 `@ResponseBody` 每个方法。
+  - **若没有会怎样**：若误用 `@Controller`，返回值会被当成视图名去找模板，接口返回 404 或 Whitelabel，客户端拿不到 JSON。
+
+- **`@RequestParam`**
+  - **为何出现**：HTTP 查询串和表单字段是浏览器与客户端最常用的传参方式，框架需要把字符串安全绑定到 Java 类型。
+  - **解决什么问题**：自动从 `?name=xx` 或表单解析参数并做类型转换，少写 `request.getParameter` 和手动解析。
+  - **若没有会怎样**：只能手写 Servlet API 取参，易漏编码、类型转换和必填校验，代码冗长且易出 NPE。
+
+- **`@PathVariable`**
+  - **为何出现**：REST 风格把资源标识放在 URL 路径里（如 `/users/1`），语义清晰且利于缓存与网关路由。
+  - **解决什么问题**：把路径片段绑定到方法参数，URL 更简洁，符合 REST 资源定位习惯。
+  - **若没有会怎样**：只能把所有参数堆在 query string，URL 冗长、不符合 REST 约定，网关和日志分析也不直观。
+
+- **`spring-boot-devtools`（可选）**
+  - **为何出现**：开发时频繁改代码重启全量 Tomcat 很慢，反馈循环长，影响效率。
+  - **解决什么问题**：classpath 变更时自动重启（或 LiveReload 静态资源），改一行 Controller 几秒内可验证。
+  - **若没有会怎样**：每次改代码都要手动停启进程，demo 阶段尚可，真实项目日常开发会非常拖慢节奏（生产也不应启用它）。
 
 ## 代码实战（对照源码）
 

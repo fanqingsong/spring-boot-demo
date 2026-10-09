@@ -8,9 +8,22 @@
 
 ## 核心知识点
 
-- **Session 存 Redis**：默认 Session 在单机 Tomcat 内存，多实例无法共享；Spring Session 把 Session 序列化到 Redis，任意节点可读取同一登录态。
-- **`spring-session` + Redis**：引入依赖并配置 Redis 后，对业务代码透明，`HttpSession` API 不变，底层存储换为 Redis。
-- **无需 sticky session**：负载均衡不必把同一用户固定到某台机器，即可水平扩容 Web 层，是分布式登录的常见方案。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **Session 存 Redis**
+  - **为何出现**：集群多 Tomcat 时，Session 默认在各自内存，用户换机器就「掉登录」。
+  - **解决什么问题**：Session 序列化进 Redis，任意节点可读同一 sessionId，登录态共享。
+  - **若没有会怎样**：负载均衡必须 sticky session，扩缩容丢 session，用户频繁重新登录。
+
+- **`spring-session` + Redis**
+  - **为何出现**：改 HttpSession 实现要侵入业务；Spring Session 提供透明替换。
+  - **解决什么问题**：依赖+配置后 `session.setAttribute` 不变，底层自动读写 Redis。
+  - **若没有会怎样**：业务自己把 session 塞 Redis，key 规范混乱，过期与并发更新 bug 多。
+
+- **无需 sticky session**
+  - **为何出现**：sticky 让某机故障时该用户 session 仍丢失，且负载不均。
+  - **解决什么问题**：任意请求到任意节点，LB 算法可轮询/最少连接，真正水平扩展 Web。
+  - **若没有会怎样**：LB 绑死 IP，节点宕机一批用户全下线，扩容还要改 LB 策略。
 
 ## 代码实战（对照源码）
 

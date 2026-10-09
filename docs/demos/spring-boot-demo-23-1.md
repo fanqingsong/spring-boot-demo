@@ -8,9 +8,22 @@
 
 ## 核心知识点
 
-- **HttpClient / RestTemplate**：在服务端作为 HTTP **客户端** 调用外部 REST API（与 02-1 提供 API 相反），支持 GET/POST、JSON  body 等。
-- **`RestRoncooController`**：演示接收 JSON、解析 `JsonNode`、再触发本地缓存/DAO 更新，模拟 webhook 或第三方回调集成。
-- **与 02-1 的关系**：02-1 是「对外暴露接口」；本模块是「调用别人接口」，组成完整微服务/集成场景的两半。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **HttpClient / RestTemplate**
+  - **为何出现**：微服务与第三方集成里，服务端也要当 HTTP 客户端调支付、短信、内部 API。
+  - **解决什么问题**：RestTemplate/HttpClient 封装连接、序列化，比裸 URLConnection 可靠。
+  - **若没有会怎样**：用错误工具或手写 socket，超时、编码、HTTPS 证书问题频发。
+
+- **`RestRoncooController`**
+  - **为何出现**：需要示例：收 JSON 回调 + 调本地缓存/DAO，模拟真实集成边界。
+  - **解决什么问题**：演示 `@RequestBody JsonNode` 与内部 Service 协作，类似 webhook 处理。
+  - **若没有会怎样**：只会写对外 API，不会消费回调，集成任务无法独立完成。
+
+- **与 02-1 的关系**
+  - **为何出现**：完整系统既要有 Server 也要有 Client，教学应成对出现。
+  - **解决什么问题**：02 提供 REST；23 消费 REST，形成闭环理解 HTTP 双向角色。
+  - **若没有会怎样**：以为 Spring 只做网站后端，遇到「调别人接口」不知如何下手。
 
 ## 代码实战（对照源码）
 

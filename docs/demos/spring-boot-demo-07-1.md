@@ -8,9 +8,22 @@
 
 ## 核心知识点
 
-- **Thymeleaf 自然模板**：模板本身是合法 HTML，带 `th:*` 属性；未启动服务时也可在浏览器打开静态预览，利于前后端协作。
-- **`starter-thymeleaf`**：与 FreeMarker 类似，自动注册 Thymeleaf 视图解析器，只需加依赖和写 `templates/*.html`。
-- **视图名 → `templates/*.html`**：Controller 返回 `"index"` 对应 `templates/index.html`，语法用 `th:text` 等替代 FreeMarker 的 `${}`。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **Thymeleaf 自然模板**
+  - **为何出现**：设计师/前端希望模板仍是标准 HTML，能在浏览器直接打开预览，JSP/部分引擎做不到。
+  - **解决什么问题**：静态 HTML + `th:*` 属性，协作时前端不依赖后端启动即可看布局。
+  - **若没有会怎样**：模板强依赖服务端语法，前后端无法并行，改样式必须联调启动服务。
+
+- **`starter-thymeleaf`**
+  - **为何出现**：与 FreeMarker 一样，需要 Boot 自动配置 TemplateEngine 与 ThymeleafViewResolver。
+  - **解决什么问题**：加依赖即能用 `templates/*.html`，与 06-1 结构平行便于对比两种引擎。
+  - **若没有会怎样**：手动注册 Thymeleaf Bean，版本与 Spring MVC 集成易出错。
+
+- **视图名 → `templates/*.html`**
+  - **为何出现**：统一约定减少配置；Thymeleaf 默认后缀 `.html` 与 FreeMarker 的 `.ftl` 区分。
+  - **解决什么问题**：Controller 仍返回 index 视图名，但解析到 HTML 模板，学习 06-1 后可快速切换引擎。
+  - **若没有会怎样**：返回视图名却放 `.ftl` 或路径错误，页面 500 或模板找不到。
 
 ## 代码实战（对照源码）
 

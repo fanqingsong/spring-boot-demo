@@ -8,9 +8,22 @@
 
 ## 核心知识点
 
-- **`spring-boot-starter-data-mongodb`**：连接 MongoDB，用文档（BSON）模型存数据，schema 灵活，适合日志、内容、非强关系结构。
-- **MongoRepository / Template**：Repository 类似 JPA 的接口式 CRUD；Template 提供更自由的查询与聚合，本模块组件演示插入与查询文档。
-- **`RoncooUserLogMongoDao`**：把用户操作日志存 MongoDB 集合，与关系型日志表对比，理解「同业务不同存储」的选型。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **`spring-boot-starter-data-mongodb`**
+  - **为何出现**：固定 schema 的关系库对日志、内容、嵌套 JSON 不友好；文档库随字段演化。
+  - **解决什么问题**：连接 MongoDB，以 BSON 文档存储，适合非强关系、写多读少的场景。
+  - **若没有会怎样**：硬塞 JSON 进 MySQL TEXT，查询索引差、schema 迁移痛苦。
+
+- **MongoRepository / Template**
+  - **为何出现**：简单 CRUD 想省代码；复杂聚合又要灵活 API，两种风格并存。
+  - **解决什么问题**：Repository 快速 CRUD；Template 写自定义查询与聚合 pipeline。
+  - **若没有会怎样**：只用 JDBC 思维写 Mongo，性能与模型都不对，全表扫 BSON。
+
+- **`RoncooUserLogMongoDao`**
+  - **为何出现**：同一「用户日志」业务可选 MySQL 表或 Mongo 集合，需要 demo 对比。
+  - **解决什么问题**：演示日志类数据进 Mongo，理解何时选文档库。
+  - **若没有会怎样**：技术选型单一，日志量一大把 MySQL 撑爆才想换库，迁移成本高。
 
 ## 代码实战（对照源码）
 

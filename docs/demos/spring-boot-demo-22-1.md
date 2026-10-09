@@ -8,9 +8,22 @@
 
 ## 核心知识点
 
-- **`spring-boot-starter-amqp`**：集成 RabbitMQ（AMQP 协议），支持更灵活的路由模型 than 简单 JMS 队列。
-- **Exchange、Queue、RoutingKey**：消息先发到交换器，再按绑定规则路由到队列；RoutingKey 决定消息进哪个队列，便于多消费者分流。
-- **配置类 + Component**：配置类声明队列、交换器、绑定关系；Component 负责发送与 `@RabbitListener` 消费，与 21-1 JMS 模式对照学习。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **`spring-boot-starter-amqp`**
+  - **为何出现**：JMS 点对点简单，但路由需求复杂（广播、主题、延迟）时 AMQP 模型更灵活；RabbitMQ 是主流实现。
+  - **解决什么问题**：集成 RabbitMQ，支持多种 Exchange 类型与可靠投递。
+  - **若没有会怎样**：只用内存 Queue 无法持久化、无法跨进程，进程挂掉消息全丢。
+
+- **Exchange、Queue、RoutingKey**
+  - **为何出现**：生产者不应直接绑死消费者队列名，否则扩展新消费者要改生产者。
+  - **解决什么问题**：Exchange 按规则路由到 Queue，RoutingKey 决定绑定，新增消费者只加绑定。
+  - **若没有会怎样**：单队列硬编码， fan-out、优先级、死信等场景无法实现，系统耦合死。
+
+- **配置类 + Component**
+  - **为何出现**：队列/交换器/绑定是基础设施，应与业务发送/监听代码分离。
+  - **解决什么问题**：Configuration 声明拓扑；Component + `@RabbitListener` 负责业务，结构清晰。
+  - **若没有会怎样**：发送端临时 declare 队列，拓扑散落代码里，环境不一致时消费不到消息。
 
 ## 代码实战（对照源码）
 

@@ -8,10 +8,27 @@
 
 ## 核心知识点
 
-- **浏览器同源策略与跨域**：前端页面与 API 不同源（协议/域名/端口任一不同）时，浏览器默认禁止 JS 读跨域响应，需服务端返回 CORS 头放行。
-- **`WebMvcConfigurerAdapter.addCorsMappings`**：在 Java 配置里全局定义允许的来源、方法、Header，一次配置对所有匹配的 URL 生效。
-- **`@CrossOrigin`**：标注在 Controller 类或方法上，细粒度开放单个接口的跨域，适合与全局配置组合或覆盖。
-- **两种配置类示例**：`CustomCorsConfiguration` 与 `CustomCorsConfiguration2` 演示不同写法（实现接口 vs `@Bean`），效果都是向响应添加 `Access-Control-*` 头。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **浏览器同源策略与跨域**
+  - **为何出现**：Web 安全模型禁止页面上的 JS 读取「不同源」接口响应，否则恶意站点可偷用户数据。
+  - **解决什么问题**：合法的前后端分离部署（不同 port/域名）需要服务端显式声明 CORS 头，浏览器才放行。
+  - **若没有会怎样**：前端 AJAX 报 CORS error，接口其实 200 但 JS 读不到 body，联调误以为后端挂了。
+
+- **`WebMvcConfigurerAdapter.addCorsMappings`**
+  - **为何出现**：多个 Controller 都要跨域时，逐个 `@CrossOrigin` 重复且易漏。
+  - **解决什么问题**：全局配置 allowedOrigins/Methods/Headers，一次声明覆盖 `/api/**` 等路径。
+  - **若没有会怎样**：每个接口 copy 一遍 CORS 配置，新增接口忘记加注解，又出现间歇性跨域失败。
+
+- **`@CrossOrigin`**
+  - **为何出现**：个别接口要更严或更松的规则（如只允许某 origin），需要细粒度覆盖全局。
+  - **解决什么问题**：在类或方法上声明跨域策略，与全局配置互补或覆盖。
+  - **若没有会怎样**：只能全局放开 `*`，安全审计不过；或无法给单个 webhook 接口单独策略。
+
+- **两种配置类示例**
+  - **为何出现**：Spring MVC 注册 CORS 有多种写法（继承适配器 vs 注册 CorsFilter Bean），团队需要可对照的范例。
+  - **解决什么问题**：`CustomCorsConfiguration` / `CustomCorsConfiguration2` 展示等价目标的不同实现路径。
+  - **若没有会怎样**：只抄一种写法不理解原理，升级 Spring 版本后 API 废弃不知如何迁移。
 
 ## 代码实战（对照源码）
 

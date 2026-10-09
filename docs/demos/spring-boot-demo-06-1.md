@@ -8,10 +8,27 @@
 
 ## 核心知识点
 
-- **`spring-boot-starter-freemarker`**：自动配置 FreeMarker 引擎与 Spring MVC 视图解析器，Controller 返回视图名即可渲染 `.ftl` 模板为 HTML。
-- **`@Controller`（非 RestController）**：方法返回值当作**视图逻辑名**，由 ViewResolver 找模板；与 `@RestController` 直接写 JSON 响应体是两种 Web 风格。
-- **`ModelMap` / `Model`**：在跳转视图前把键值对放入模型，模板里用 `${title}` 等占位符展示，实现服务端渲染页面。
-- **模板路径 `classpath:/templates/*.ftl`**：Boot 约定默认目录与后缀，返回 `"index"` 即解析为 `templates/index.ftl`，无需 web.xml 或手动配置 ViewResolver。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **`spring-boot-starter-freemarker`**
+  - **为何出现**：服务端渲染页面曾是 Web 主流，需要模板引擎把 HTML 与数据合并；Boot 需自动接好 ViewResolver。
+  - **解决什么问题**：引入 FreeMarker 并注册视图解析，Controller 返回逻辑视图名即可出 HTML。
+  - **若没有会怎样**：手写 ViewResolver Bean、模板路径、编码配置，一个页面 demo 也要大量 XML/Java 配置。
+
+- **`@Controller`（非 RestController）**
+  - **为何出现**：管理后台、官网等仍需要 HTML 页面而非纯 JSON，MVC 要区分两种返回语义。
+  - **解决什么问题**：返回视图名走视图解析链，配合模板生成 HTML，适合 SSR。
+  - **若没有会怎样**：用 RestController 返回字符串 index 视图名时，浏览器收到的是纯文本 index，而不是渲染后的页面。
+
+- **`ModelMap` / `Model`**
+  - **为何出现**：模板需要动态数据，不能把 SQL 写在 ftl 里；要在 Controller 与视图间传递对象。
+  - **解决什么问题**：键值对进入模型，模板 `${title}` 引用，清晰分离控制器逻辑与展示。
+  - **若没有会怎样**：模板只能写死文案，每改文案要改 Java 或改模板两处，无法复用同一模板多数据。
+
+- **模板路径 `classpath:/templates/*.ftl`**
+  - **为何出现**：Convention over configuration：若每个项目自定义路径，starter 无法「零配置」运行。
+  - **解决什么问题**：返回逻辑视图名 index 即找 templates/index.ftl，与 Boot 其它 demo 路径一致，降低记忆成本。
+  - **若没有会怎样**：视图 404、Whitelabel，因为 ViewResolver 找不到文件，新人不知道模板该放哪。
 
 ## 代码实战（对照源码）
 

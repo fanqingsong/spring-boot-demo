@@ -8,9 +8,22 @@
 
 ## 核心知识点
 
-- **Alibaba Druid 连接池**：替代 Boot 默认 HikariCP/Tomcat Pool，提供连接复用、防泄漏，并内置 SQL 监控、Wall 防火墙等运维能力。
-- **`DruidConfiguration` + `spring.datasource.druid`**：自定义 `DataSource` Bean，用 `@ConfigurationProperties` 把 `initial-size`、`max-active`、`filters` 等绑到 Druid 实例。
-- **`DruidWebStatFilter` + 监控 Servlet**：Filter 采集 Web 与 JDBC 关联统计；StatViewServlet 提供 `/druid` 控制台登录页查看 SQL 执行次数、慢 SQL 等。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **Alibaba Druid 连接池**
+  - **为何出现**：默认池功能少，DBA 需要 SQL 监控、慢查询、连接泄漏检测；Druid 在国内大量实践。
+  - **解决什么问题**：连接复用 + stat/wall 等 filter，运维可在控制台看 SQL 与连接状态。
+  - **若没有会怎样**：连接泄漏 undetected，池耗尽挂全站；慢 SQL 无统计，性能问题只能猜。
+
+- **`DruidConfiguration` + `spring.datasource.druid`**
+  - **为何出现**：Druid 参数多，手写 setter 易漏；Boot 风格是用 ConfigurationProperties 绑定。
+  - **解决什么问题**：条件装配 DruidDataSource，properties 里 type + druid.* 即可调池大小与 filters。
+  - **若没有会怎样**：只改 url 不换 type，仍用默认池，以为上了 Druid 其实没有监控能力。
+
+- **`DruidWebStatFilter` + 监控 Servlet**
+  - **为何出现**：要看 SQL 与 URI 关联、慢请求，需要 Web 层 + JDBC 层联合统计与 UI。
+  - **解决什么问题**：Filter 采集 web 统计；StatViewServlet 提供 /druid 登录控制台（需配合 filters=stat）。
+  - **若没有会怎样**：无监控界面只能翻日志；或控制台无密码公网暴露，严重安全隐患。
 
 ## 代码实战（对照源码）
 

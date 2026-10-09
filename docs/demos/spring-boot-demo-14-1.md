@@ -8,10 +8,27 @@
 
 ## 核心知识点
 
-- **`spring-boot-starter-data-jpa`**：集成 Hibernate 与 Spring Data JPA，用实体映射表、用 Repository 接口完成 CRUD，多数 SQL 由框架生成。
-- **`@Entity` + `JpaRepository`**：实体类对应表结构；Repository 继承 `JpaRepository<实体, 主键类型>` 即拥有 save/findAll 等，无需写实现类。
-- **Hibernate DDL**：通过 `spring.jpa.hibernate.ddl-auto` 等控制在启动时自动建表/更新 schema（开发常用，生产需谨慎）。
-- **`RoncooUserLog` 实体**：在 13-1 JDBC 用户表基础上增加 JPA 管理的日志表，演示同一项目中 JDBC 与 JPA 可并存（本模块侧重 JPA 侧）。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **`spring-boot-starter-data-jpa`**
+  - **为何出现**：手写 JDBC CRUD 占开发时间；ORM 把表映射对象、自动生成 SQL 是 2000 年代以来的主流提效手段。
+  - **解决什么问题**：引入 Hibernate + Spring Data，简单持久化几乎不用写 SQL。
+  - **若没有会怎样**：表少时尚可手写；表多后维护成本指数上升，交付变慢。
+
+- **`@Entity` + `JpaRepository`**
+  - **为何出现**：需要统一的对象-关系映射规范和无需实现类的 DAO 层。
+  - **解决什么问题**：实体注解定义表结构；Repository 接口继承即拥有 CRUD 与分页，Spring 运行时生成实现。
+  - **若没有会怎样**：每个表一个 Impl 类动辄上百行，改字段要同步改 SQL 与映射多处。
+
+- **Hibernate DDL**
+  - **为何出现**：开发阶段表结构频繁变，手工建表拖慢迭代；生产又必须禁止乱改表。
+  - **解决什么问题**：通过 ddl-auto 在 dev 自动建表/更新，理解 schema 与实体关系（prod 应改为 validate）。
+  - **若没有会怎样**：dev 无表启动报错；或 prod 误开 create-drop 导致生产数据被清空。
+
+- **`RoncooUserLog` 实体**
+  - **为何出现**：同一业务域常有主表+日志表；在 13-1 JDBC 之上演示 JPA 加第二张表。
+  - **解决什么问题**：展示 JPA 实体与 Repository 如何管理日志表，与 JDBC 用户 DAO 并存。
+  - **若没有会怎样**：只会一种持久化方式，选型 JPA 还是 JDBC 时缺少对比经验。
 
 ## 代码实战（对照源码）
 

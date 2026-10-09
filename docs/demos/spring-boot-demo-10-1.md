@@ -8,9 +8,22 @@
 
 ## 核心知识点
 
-- **`@ServletComponentScan`**：在 Spring Boot 中启用对 `@WebServlet`、`@WebFilter`、`@WebListener` 的扫描注册，替代传统 `web.xml` 声明三大组件。
-- **无 web.xml 注册 Servlet 组件**：Boot 主推 Java 配置与注解；Filter/Servlet 仍走 Servlet 规范生命周期，与 Spring MVC 的 DispatcherServlet 并存。
-- **Filter 执行时机**：在请求进入 DispatcherServlet 之前（及响应返回前）执行链式过滤，常用于编码、鉴权、日志；本模块用 Filter 打日志演示顺序。
+本节每个知识点从 **为何出现**、**解决什么问题**、**若没有会怎样** 三方面说明，便于理解「为什么要学这一项」，而不只是记名词。
+
+- **`@ServletComponentScan`**
+  - **为何出现**：遗留 Filter/Servlet/Listener 用 `@WebServlet` 等注解，Boot 默认只扫 Spring Bean，不扫 Servlet 注解。
+  - **解决什么问题**：启动类开启扫描，无 web.xml 也能注册三大组件，兼容 Servlet 规范。
+  - **若没有会怎样**：Filter 不生效，安全/编码/日志链缺失，还以为「写了 @WebFilter 就应该跑」。
+
+- **无 web.xml 注册 Servlet 组件**
+  - **为何出现**：Servlet 3.0+ 注解配置成为主流，Boot 哲学是「无 XML 启动」。
+  - **解决什么问题**：Java 注解声明 url-pattern、init-param，与 Spring MVC 共存于同一容器。
+  - **若没有会怎样**：被迫维护 web.xml + Boot 双配置，部署模型混乱。
+
+- **Filter 执行时机**
+  - **为何出现**：很多横切逻辑（字符编码、鉴权、MDC 日志）应在进入 Spring MVC 之前统一处理。
+  - **解决什么问题**：Filter 链在 DispatcherServlet 前后执行，本模块用日志演示顺序，便于理解请求路径。
+  - **若没有会怎样**：逻辑全塞 Interceptor 或 Controller，重复代码多，且无法覆盖非 Spring 映射的 Servlet。
 
 ## 代码实战（对照源码）
 
