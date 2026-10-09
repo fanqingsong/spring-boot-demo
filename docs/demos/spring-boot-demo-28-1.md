@@ -31,6 +31,30 @@ namespace 与接口全限定名一致。
 - 增加动态 SQL if 条件查询。
 
 
+## 关键代码说明
+
+本模块是独立的小工程（包名回到 `com.roncoo.education`）。MyBatis 用注解把 SQL 写在 Mapper 接口上，没有 XML。
+
+```java
+@Mapper
+public interface RoncooUserMapper {
+
+    @Insert(value = "insert into roncoo_user (name, create_time) values (#{name,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})")
+    int insert(RoncooUser record);
+
+    @Select(value = "select id, name, create_time from roncoo_user where id = #{id,jdbcType=INTEGER}")
+    @Results(value = { @Result(column = "create_time", property = "createTime", jdbcType = JdbcType.TIMESTAMP) })
+    RoncooUser selectByPrimaryKey(Integer id);
+}
+```
+
+- `@Mapper` 让 MyBatis-Spring-Boot 为接口生成实现并放进容器，调用方 `@Autowired RoncooUserMapper` 即可。
+- `#{name}` 从参数对象 `RoncooUser` 取 `name` 属性，是预编译参数。`jdbcType` 在值为 null 时告诉驱动用哪种 SQL 类型。
+- 查询列 `create_time` 与属性 `createTime` 不一致，所以用 `@Results` / `@Result` 写明映射。`id`、`name` 名字能对上，可以不写。
+- 启动类只有 `@SpringBootApplication`，没有 `@MapperScan`。接口上的 `@Mapper` 已经足够。数据源仍是 `application.properties` 里的 MySQL URL。
+
+工程里还有一个 `com.roncoo.example.SpringBootDemo281Application`，与上面这个启动类重复。运行时只启动 `com.roncoo.education` 这个，Mapper 才在扫描范围内。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

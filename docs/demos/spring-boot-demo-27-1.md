@@ -31,6 +31,30 @@ management 端点暴露策略（视版本配置键）。
 - 只暴露 health、info，关闭 env 等敏感端点。
 
 
+## 关键代码说明
+
+监控没有单独的 Java 类。引入 `spring-boot-starter-actuator` 后，框架按配置注册 HTTP 端点。开发配置里相关段落是：
+
+```properties
+endpoints.sensitive=true
+endpoints.shutdown.enabled=true
+
+security.basic.enabled=true
+security.user.name=roncoo1
+security.user.password=roncoo1
+management.security.roles=SUPERUSER
+
+security.basic.path=/manage
+management.context-path=/manage
+```
+
+- `management.context-path=/manage` 把 Actuator 从业务端口的根路径挪到 `/manage`。例如健康检查是 `/manage/health`，而不是 `/health`。
+- `endpoints.sensitive=true` 表示这些端点需要认证。`security.basic.enabled=true` 打开 HTTP Basic，用户名和密码就是上面两项。
+- `security.basic.path=/manage` 只保护管理路径，业务接口 `/web/index` 不要求这套账号。
+- `endpoints.shutdown.enabled=true` 会暴露关闭应用的端点。这是演示开关，生产环境不应打开。
+
+1.4.x 的键名是 `management.context-path`、`endpoints.sensitive`。Spring Boot 2.x 改成了 `management.endpoints.web.base-path` 和 `management.endpoint.*.enabled`，升级时不能原样照搬。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

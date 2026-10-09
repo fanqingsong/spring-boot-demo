@@ -32,6 +32,49 @@ JPA 实体映射表。
 - 在 Repository 中声明 `findByUserName` 方法名查询。
 
 
+## 关键代码说明
+
+日志表改用 Spring Data JPA：实体上声明表映射，接口只声明方法名，SQL 由框架生成。用户表 `RoncooUserDao` 仍是上一讲的 JdbcTemplate。
+
+### 实体
+
+```java
+@Entity
+public class RoncooUserLog {
+    @Id
+    @GeneratedValue
+    private Integer id;
+
+    @Column
+    private Date createTime;
+    @Column
+    private String userName;
+    @Column
+    private String userIp;
+}
+```
+
+`@Entity` 让这个类对应一张表（默认表名由类名推导）。`@Id` + `@GeneratedValue` 表示主键自增。字段需要 getter/setter，JPA 通过它们读写列。
+
+### 仓库接口
+
+```java
+public interface RoncooUserLogDao extends JpaRepository<RoncooUserLog, Integer> {
+
+    @Query(value = "select u from RoncooUserLog u where u.userName=?1")
+    RoncooUserLog findByUserName(String string);
+
+    RoncooUserLog findByUserNameAndUserIp(String string, String ip);
+
+    Page<RoncooUserLog> findByUserName(String string, Pageable pageable);
+}
+```
+
+- `JpaRepository<RoncooUserLog, Integer>` 已经提供 `save`、`findOne`、`delete` 等，不用写实现类。
+- `findByUserNameAndUserIp` 没有 `@Query`。Spring Data 解析方法名：`findBy` + `UserName` + `And` + `UserIp`，生成按这两个字段查询的 SQL。
+- 带 `@Query` 的 `findByUserName` 使用 JPQL（`select u from RoncooUserLog`），`?1` 是第一个参数。这里查的是实体属性 `userName`，不是表列名。
+- 返回 `Page` 并多一个 `Pageable` 参数时，框架自动加分页，不用手写 `limit`。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

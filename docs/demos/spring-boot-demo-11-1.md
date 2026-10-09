@@ -32,6 +32,40 @@
 - 仅对 `/api/**` 开放 CORS，其他路径禁止。
 
 
+## 关键代码说明
+
+浏览器跨域时会先看响应头 `Access-Control-Allow-Origin`。本 demo 演示了三种加这个头的方式，其中全局两种目前被注释，真正生效的是方法上的 `@CrossOrigin`。
+
+### 只对一个接口放开
+
+```java
+@RestController
+@RequestMapping("/api")
+public class ApiController {
+
+    @CrossOrigin(origins = "http://localhost:8080")
+    @RequestMapping(value = "/get", method = RequestMethod.POST)
+    public HashMap<String, Object> get(@RequestParam String name) {
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put("title", "hello world");
+        map.put("name", name);
+        return map;
+    }
+}
+```
+
+`origins` 限定允许的来源。其它来源的浏览器脚本调用 `/api/get` 会被浏览器拦截。这个注解只作用于 `get` 方法。
+
+### 全局方式（源码里已注释，作为对照）
+
+`CustomCorsConfiguration` 注册一个 `WebMvcConfigurer`，在 `addCorsMappings` 里配置：
+
+```java
+registry.addMapping("/api/**").allowedOrigins("http://localhost:8080");
+```
+
+`CustomCorsConfiguration2` 直接继承 `WebMvcConfigurerAdapter` 并覆盖同一方法，效果等价。两处调用都处于注释状态，避免和 `@CrossOrigin` 叠在一起。需要全局 CORS 时，取消其中一处注释即可，不必两种都打开。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

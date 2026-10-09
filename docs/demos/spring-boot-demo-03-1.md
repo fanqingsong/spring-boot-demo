@@ -33,6 +33,55 @@
 - 增加 `roncoo.version=1.0` 并在接口中返回。
 
 
+## 关键代码说明
+
+本讲的重点是「配置写在哪里、谁覆盖谁、怎么注入到 Java」。
+
+### 两份 properties，后加载的覆盖先加载的
+
+`src/main/resources/application.properties` 里写了 `server.port=8090`，注释标明优先级较低。同名的 `src/main/resources/config/application.properties` 写了 `server.port=8080`，注释标明优先级较高。
+
+Spring Boot 会同时加载这两处，`config/` 目录下的文件优先级更高，所以实际端口是 **8080**，不是 8090。改端口时要改生效的那一份。
+
+自定义属性用占位符，在 `config/application.properties` 中：
+
+```properties
+roncoo.secret=${random.value}
+roncoo.number=${random.int}
+roncoo.name=www.roncoo.com
+roncoo.desc=the domain is ${roncoo.name}
+server.port=8080
+```
+
+- `${random.value}`、`${random.int}` 在启动时由 Spring Boot 填成随机值，每次重启都会变。
+- `${roncoo.name}` 引用同一份配置里已经定义的键，展开后 `roncoo.desc` 是 `the domain is www.roncoo.com`。
+
+外层 `application.properties` 里还有 Jackson 日期格式，这是公共配置，`config/` 没有覆盖它们，所以仍然生效：
+
+```properties
+spring.jackson.date-format=yyyy-MM-dd HH:mm:ss
+spring.jackson.time-zone=Asia/Chongqing
+```
+
+`User.date` 序列化成 JSON 时就会按这个格式和时区输出。
+
+### `@Value` 把配置注入字段
+
+```java
+@Value(value = "${roncoo.secret}")
+private String secret;
+
+@Value(value = "${roncoo.number}")
+private int id;
+
+@Value(value = "${roncoo.desc}")
+private String desc;
+```
+
+容器创建 `IndexController` 时，按占位符从 Environment 取值。`roncoo.number` 是整数随机值，字段类型是 `int`，类型对不上会启动失败。
+
+`/index/get` 把这三个字段放进 Map 返回，用来确认注入的是 `config/` 里那份（`desc` 以 `the domain is` 开头），而不是外层文件里的 `is a domain name`。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

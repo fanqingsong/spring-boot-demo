@@ -31,6 +31,51 @@
 - HTML 模板邮件嵌入图片（cid）。
 
 
+## 关键代码说明
+
+发信分两步：FreeMarker 渲染正文，自定义 `JavaMailSender` 在多个账号之间轮询。
+
+### 渲染并发送
+
+```java
+public void sendMail(String email) {
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("email", email);
+    String text = getTextByTemplate("mail/roncoo.ftl", map);
+    send(email, text);
+}
+```
+
+`getTextByTemplate` 调用 `FreeMarkerTemplateUtils.processTemplateIntoString`。模板 `templates/mail/roncoo.ftl` 里的 `${email}` 被换成收件人地址，得到一段 HTML。
+
+```java
+MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+helper.setFrom(from);
+helper.setTo(email);
+helper.setSubject("测试邮件");
+helper.setText(text, true);
+javaMailSender.send(message);
+```
+
+`setText(text, true)` 的 `true` 表示正文是 HTML。
+
+### 多账号轮询
+
+`spring.mail.username` 和 `spring.mail.password` 按逗号拆成列表（配置里是多组邮箱和密码，文档不抄录明文）。构造方法把它们放进 `usernameList`、`passwordList`。
+
+```java
+@Override
+protected void doSend(MimeMessage[] mimeMessage, Object[] object) throws MailException {
+    super.setUsername(usernameList.get(currentMailId));
+    super.setPassword(passwordList.get(currentMailId));
+    super.setHost(this.properties.getHost());
+    super.doSend(mimeMessage, object);
+    currentMailId = (currentMailId + 1) % usernameList.size();
+}
+```
+
+每次真正 `send` 时才选定当前下标的账号，发完后下标加一并对账号数取模。下一次调用用下一个账号。用户名和密码列表长度必须一致，否则会按下标取错密码。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

@@ -32,6 +32,45 @@
 - 把 03-1 的 properties 完整迁移为 yaml 一份对比。
 
 
+## 关键代码说明
+
+YAML 和 03-1 的 properties 表达同一套配置，只是层级写法不同。Java 侧仍然是 `@Value("${roncoo.secret}")`，占位符路径用点号，和 YAML 缩进一一对应。
+
+`config/application.yaml` 优先级更高（端口 9090），内容是：
+
+```yaml
+roncoo:
+  secret: ${random.value}
+  number: ${random.int}
+  name: www.roncoo.com
+  desc: the domain is ${roncoo.name}
+
+server:
+  port: 9090
+```
+
+对照关系：
+
+| YAML | 等价的 properties 键 | 注入方式 |
+| --- | --- | --- |
+| `roncoo.secret` | `roncoo.secret` | `@Value("${roncoo.secret}")` |
+| `roncoo.number` | `roncoo.number` | `@Value("${roncoo.number}")`，字段是 `int` |
+| `roncoo.desc` | `roncoo.desc` | 先展开 `${roncoo.name}`，再注入 |
+| `server.port` | `server.port` | 框架读取，决定 Tomcat 端口 |
+
+外层 `application.yaml` 还配置了 Jackson：
+
+```yaml
+spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Chongqing
+```
+
+这等价于 `spring.jackson.date-format` 和 `spring.jackson.time-zone`。`config/application.yaml` 没有写这两项，所以日期格式仍以外层为准；端口被 `config` 覆盖成 9090。
+
+`IndexController` 与 03-1 相同：`/index/get` 把 `secret`、`id`、`desc` 放进 JSON，用来核对 YAML 是否被正确解析。缩进错误时启动会直接失败，YAML 对空格敏感。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

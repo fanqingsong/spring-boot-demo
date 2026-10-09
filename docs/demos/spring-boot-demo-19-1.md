@@ -32,6 +32,56 @@ select 走 `@Cacheable`，update `@CachePut`，delete `@CacheEvict`；观察第�
 - 配置 ehcache.xml 限制缓存条目与过期时间。
 
 
+## 关键代码说明
+
+缓存要先在启动类打开，否则 `@Cacheable` 不生效：
+
+```java
+@EnableCaching
+@SpringBootApplication
+public class SpringBootDemo191Application {
+```
+
+缓存实现用 EhCache，配置指向：
+
+```properties
+spring.cache.ehcache.config=classpath:config/ehcache.xml
+```
+
+```xml
+<cache name="roncooCache" eternal="false" maxEntriesLocalHeap="0" timeToIdleSeconds="200"/>
+```
+
+`name` 必须和 `@CacheConfig(cacheNames = "roncooCache")` 一致。空闲超过 200 秒的条目会被清掉。
+
+```java
+@CacheConfig(cacheNames = "roncooCache")
+@Repository
+public class RoncooUserLogCacheImpl implements RoncooUserLogCache {
+
+    @Cacheable(key = "#p0")
+    public RoncooUserLog selectById(Integer id) {
+        System.out.println("查询功能，缓存找不到，直接读库, id=" + id);
+        return roncooUserLogDao.findOne(id);
+    }
+
+    @CachePut(key = "#p0")
+    public RoncooUserLog updateById(RoncooUserLog roncooUserLog) {
+        return roncooUserLogDao.save(roncooUserLog);
+    }
+
+    @CacheEvict(key = "#p0")
+    public String deleteById(Integer id) {
+        return "清空缓存成功";
+    }
+}
+```
+
+- `#p0` 是第一个参数。`selectById(1)` 的缓存键是 `1`。
+- `@Cacheable`：命中则直接返回缓存，**不会进入方法体**，控制台看不到「直接读库」。未命中才查库，并把返回值写入缓存。
+- `@CachePut`：方法总会执行，再用返回值更新键 `#p0`。这里第一个参数是整个 `RoncooUserLog` 对象，键是对象的 `toString()`，和查询时的 id 不是同一个键，更新后再次 `selectById` 仍可能命中旧缓存。这是源码里的实际行为。
+- `@CacheEvict`：按同样规则删键。`deleteById` 的方法体没有调用 DAO 删库，只删缓存并返回固定字符串。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

@@ -27,6 +27,20 @@
 - 使用 `th:text` 输出转义内容，理解 XSS 防护。
 
 
+## 关键代码说明
+
+Controller 与 06-1 相同：`@Controller` 返回视图名 `"index"`，`ModelMap` 放入 `title`。变的是模板引擎和语法。
+
+Thymeleaf 默认模板目录仍是 `classpath:/templates/`，后缀是 `.html`，所以返回值 `"index"` 对应 `templates/index.html`。
+
+页面上取值的写法从 FreeMarker 的 `${title}` 换成 Thymeleaf 属性：
+
+```html
+<h1 id="title" th:text="${title}"></h1>
+```
+
+`th:text` 在服务端把元素的文本替换成模型里的 `title`。用浏览器查看源码时，看到的是已经替换后的 `hello world`，而不是 `th:text`。静态资源路径 `/css`、`/webjars` 的规则与 06-1 相同。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

@@ -42,6 +42,66 @@
 - 给 `User` 增加 `email` 字段，观察 JSON 变化。
 
 
+## 关键代码说明
+
+本讲只有三处代码，合在一起就是一个能跑起来的 REST 服务。
+
+### 启动类：一行完成容器启动
+
+`SpringBootDemo21Application` 没有手写 Tomcat、没有 XML。`@SpringBootApplication` 同时打开自动配置、组件扫描和 `@Configuration`。`SpringApplication.run` 会创建 Spring 容器并启动内嵌 Tomcat。
+
+```java
+@SpringBootApplication
+public class SpringBootDemo21Application {
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBootDemo21Application.class, args);
+    }
+}
+```
+
+启动类所在包是 `com.roncoo.education`，默认只扫描这个包及其子包。Controller、Bean 必须放在它下面，否则不会被注册。
+
+### Controller：三种返回方式
+
+```java
+@RestController
+@RequestMapping(value = "/index")
+public class IndexController {
+
+    @RequestMapping
+    public String index() {
+        return "hello world";
+    }
+
+    @RequestMapping(value = "/get")
+    public HashMap<String, Object> get(@RequestParam String name) {
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put("title", "hello world");
+        map.put("name", name);
+        return map;
+    }
+
+    @RequestMapping(value = "/get/{id}/{name}")
+    public User getUser(@PathVariable int id, @PathVariable String name) {
+        User user = new User();
+        user.setId(id);
+        user.setName(name);
+        user.setDate(new Date());
+        return user;
+    }
+}
+```
+
+- `@RestController` = `@Controller` + `@ResponseBody`。方法返回值直接写进 HTTP 响应，不会去找模板。
+- 类上的 `@RequestMapping("/index")` 是前缀，三个方法分别对应 `/index`、`/index/get`、`/index/get/{id}/{name}`。
+- `index()` 返回 `String`，响应体就是纯文本 `hello world`。
+- `get` 返回 `HashMap`，Spring MVC 用 Jackson 把它序列化成 JSON。`@RequestParam String name` 绑定查询参数，缺了 `name` 会 400。
+- `getUser` 的 `{id}`、`{name}` 是路径变量，由 `@PathVariable` 按名字注入。返回 `User` 同样走 JSON。
+
+### User：普通 JavaBean
+
+`User` 只有 `id`、`name`、`date` 和 getter/setter。Jackson 按 getter 生成 JSON 字段名。这里没有 JPA 注解，它只是响应对象。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

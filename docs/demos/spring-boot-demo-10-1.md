@@ -39,6 +39,67 @@
 - 改用 `@Bean` + `FilterRegistrationBean` 注册 Filter（查 Spring Boot 文档）。
 
 
+## 关键代码说明
+
+Servlet 3.0 的 `@WebServlet`、`@WebFilter`、`@WebListener` 不会自动生效。启动类上的 `@ServletComponentScan` 才会扫描并注册它们。
+
+```java
+@ServletComponentScan
+@SpringBootApplication
+public class SpringBootDemo101Application {
+```
+
+### Servlet
+
+```java
+@WebServlet(urlPatterns = "/roncoo", name = "customServlet")
+public class CustomServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doPost(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.getWriter().write("hello world");
+    }
+}
+```
+
+`urlPatterns="/roncoo"` 注册独立地址，和 `@RequestMapping` 无关。访问 `/roncoo` 不经过 `WebController`，响应体是 `hello world`。
+
+### Filter
+
+```java
+@WebFilter(urlPatterns = "/*")
+public class CustomFilter implements Filter {
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        System.out.println("do filter");
+        chain.doFilter(request, response);
+    }
+}
+```
+
+`/*` 表示所有请求都会进来。`chain.doFilter` 必须调用，否则请求停在过滤器里，后面的 Servlet 和 Controller 都不会执行。`init` 在启动时打印 `init filter`，`destroy` 在容器关闭时打印。
+
+### Listener
+
+```java
+@WebListener
+public class CustomListener implements ServletContextListener {
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+        System.out.println("contextInitialized");
+    }
+}
+```
+
+应用启动、ServletContext 创建完成时打印 `contextInitialized`，早于具体请求。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

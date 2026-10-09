@@ -31,6 +31,46 @@
 - 设置 cache 默认过期时间。
 
 
+## 关键代码说明
+
+`@Cacheable`、`@CachePut`、`@CacheEvict` 仍在 `RoncooUserLogCacheImpl`，和 19-1 相同。本讲换成 Redis 当 CacheManager，并自定义过期时间和 key。
+
+```java
+@Configuration
+public class RedisCacheConfiguration extends CachingConfigurerSupport {
+
+    @Bean
+    public CacheManager cacheManager(RedisTemplate<?, ?> redisTemplate) {
+        RedisCacheManager cacheManager = new RedisCacheManager(redisTemplate);
+        cacheManager.setDefaultExpiration(20);
+        Map<String, Long> expires = new HashMap<String, Long>();
+        expires.put("roncooCache", 200L);
+        cacheManager.setExpires(expires);
+        return cacheManager;
+    }
+
+    @Override
+    public KeyGenerator keyGenerator() {
+        return new KeyGenerator() {
+            @Override
+            public Object generate(Object o, Method method, Object... objects) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(o.getClass().getName());
+                sb.append(method.getName());
+                for (Object obj : objects) {
+                    sb.append(obj.toString());
+                }
+                return sb.toString();
+            }
+        };
+    }
+}
+```
+
+- 默认过期 20 秒；名为 `roncooCache` 的缓存单独 200 秒，对应 19-1 里 EhCache 的 `timeToIdleSeconds`。
+- 自定义 `KeyGenerator` 把「类名 + 方法名 + 每个参数」拼成 key，避免不同方法共用一个 id 时互相覆盖。
+- `RoncooUserLogCacheImpl` 上写了 `key = "#p0"` 时，以注解里的 key 为准，不会走这个 `KeyGenerator`。只有没写 `key` 的缓存方法才用它。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

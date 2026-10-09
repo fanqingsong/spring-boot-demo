@@ -32,6 +32,47 @@
 - 增加 `@ExceptionHandler` 处理自定义业务异常类。
 
 
+## 关键代码说明
+
+错误处理分两条线：自己抛出的异常，以及容器产生的 404/500。
+
+### 故意抛异常
+
+```java
+@RequestMapping("error")
+public String error(ModelMap map) {
+    throw new RuntimeException("测试异常");
+}
+```
+
+访问 `/web/error` 会抛 `RuntimeException`。没有处理时，用户会看到 Spring Boot 默认错误页。
+
+### `@ControllerAdvice` 接住异常
+
+```java
+@ControllerAdvice
+public class BizExcepiton {
+
+    @ExceptionHandler({ RuntimeException.class })
+    @ResponseStatus(HttpStatus.OK)
+    public ModelAndView processException(RuntimeException exception) {
+        ModelAndView m = new ModelAndView();
+        m.addObject("roncooException", exception.getMessage());
+        m.setViewName("error/500");
+        return m;
+    }
+}
+```
+
+- `@ControllerAdvice` 对所有 Controller 生效，不用在每个方法上写 try/catch。
+- `@ExceptionHandler(RuntimeException.class)` 匹配这次抛出的异常。类里还有一个处理 `Exception` 的方法，更具体的 `RuntimeException` 会先被上面这个方法接住。
+- `setViewName("error/500")` 对应 `templates/error/500.ftl`。模板里 `${roncooException}` 就是 `测试异常`。
+- `@ResponseStatus(HttpStatus.OK)` 把状态码改成 200。浏览器看到的是错误文案，但 HTTP 状态是成功。生产环境通常应保持 500，这里是为了演示可以改写状态码。
+
+### 容器级错误页
+
+`templates/error/5xx.ftl` 使用 Spring Boot 错误属性 `${exception}`，给未被 `@ExceptionHandler` 吃掉的 5xx 使用。`public/error/404.html` 是静态 404 页，找不到 Controller 映射时由错误机制返回。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

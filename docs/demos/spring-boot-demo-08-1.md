@@ -31,6 +31,50 @@ jsp 相关依赖与 packaging 配置。
 - 对比为何 Spring Boot 官方更推荐 Freemarker/Thymeleaf 而非 JSP。
 
 
+## 关键代码说明
+
+JSP 不能像 FreeMarker 那样只放在 `classpath:/templates`。本 demo 把页面放在 `src/main/webapp`，并改成 war。
+
+### pom：war + Jasper
+
+```xml
+<packaging>war</packaging>
+```
+
+另外引入 `tomcat-embed-jasper`（编译 JSP）和 `jstl`，scope 为 `provided`，因为运行时由外置或内嵌 Tomcat 提供。
+
+### 视图前后缀
+
+```properties
+spring.mvc.view.prefix=/WEB-INF/templates/
+spring.mvc.view.suffix=.jsp
+```
+
+Controller 仍 `return "index"`。解析结果是 `/WEB-INF/templates/index.jsp`，对应文件 `src/main/webapp/WEB-INF/templates/index.jsp`。
+
+### JSP 页面
+
+```jsp
+<h1 id="title">${title}</h1>
+<c:url value="http://www.roncoo.com" var="url"/>
+<spring:url value="http://www.roncoo.com" htmlEscape="true" var="springUrl" />
+```
+
+`${title}` 是 JSP EL，读的是 `ModelMap` 里的同名属性。`c:url`、`spring:url` 需要文件顶部的 taglib。静态资源在 `src/main/webapp/static/`，链接写成 `/static/css/...`，和 jar 工程里 `classpath:/static` 直接映射到 `/css` 不一样。
+
+### 外置容器入口
+
+```java
+public class ServletInitializer extends SpringBootServletInitializer {
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(SpringBootDemo81Application.class);
+    }
+}
+```
+
+打成 war 丢进外部 Tomcat 时，容器不会调用 `main`，而是通过这个类启动 Spring Boot。`main` 仍保留，便于 `mvn spring-boot:run`。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

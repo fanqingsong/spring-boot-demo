@@ -216,6 +216,30 @@ java -jar target/spring-boot-demo-04-2-0.0.1-SNAPSHOT.jar --spring.profiles.acti
 
 区分不同环境的核心就是 `spring.profiles.active` 这一个属性。本地开发用 `dev`，CI/CD 流水线用 `test`/`stage`，上线部署用 `prod`。配置文件可以从单一 `application.yaml` 逐步拆分为 `application-{profile}.yml` 的独立文件，让各环境配置职责清晰、互不干扰。
 
+## 关键代码说明
+
+上文「代码实战」已经贴出完整 YAML。真正决定端口的是下面这段结构：
+
+```yaml
+spring:
+  profiles:
+    active: dev
+server:
+  port: 8888
+
+---
+spring:
+  profiles: dev
+server:
+  port: 8080
+```
+
+- 第一个文档是公共配置。`active: dev` 表示默认激活 dev；`server.port: 8888` 是没被 profile 覆盖时的端口。
+- `---` 开启下一段文档。`spring.profiles: dev`（1.4.x 写法）表示这段只在 profile 为 `dev` 时合并进来。
+- 合并后同名的 `server.port` 被改成 8080。切到 `test`、`prod` 时分别变成 8081、8082。
+
+启动类和 `IndexController` 与 02-1 相同，代码里没有 `if (prod)`。换环境只改 `spring.profiles.active`。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

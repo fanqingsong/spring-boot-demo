@@ -31,6 +31,37 @@ Redis 连接与 session namespace。
 - 对比 Cookie 中 SESSION ID 变化。
 
 
+## 关键代码说明
+
+业务代码仍然用 Servlet 的 `HttpSession`，不直接操作 Redis。Spring Session 把容器里的 session 换成存在 Redis 中的实现。
+
+```java
+@RequestMapping(value = "/index")
+public String index(ModelMap map, HttpSession httpSession) {
+    map.put("title", "第一个应用：sessionID=" + httpSession.getId());
+    logger.info("sessionID=" + httpSession.getId());
+    return "index";
+}
+```
+
+`httpSession.getId()` 就是当前会话 id。页面标题里能看到它。多个实例共享会话时，这个 id 对应的数据在 Redis，而不是各 JVM 的内存。
+
+开关在配置里：
+
+```properties
+spring.session.store-type=none
+spring.redis.host=localhost
+spring.redis.port=6379
+```
+
+`store-type=none` 表示**不用** Redis 存 session，行为仍是单机内存 session。要做集群共享，改成：
+
+```properties
+spring.session.store-type=redis
+```
+
+并保证 Redis 可连。pom 里同时有 `spring-session` 与 Redis starter，改配置后无需改 Controller。同一浏览器带着 session cookie 访问另一个端口的实例时，`getId()` 应保持不变。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

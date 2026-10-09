@@ -112,6 +112,28 @@ logger.info("this is a log test, info");
 - 给 `<configuration>` 加上 `monitorInterval="5"`，改 XML 中的 level，确认无需重启即可生效
 - 故意去掉 exclusion 再启动，观察 SLF4J 绑定冲突，加深「为什么必须排除默认 logging」的印象（看完后改回去）
 
+## 关键代码说明
+
+上文已经对比了 pom 排除和 Controller。再看配置是怎么接到 Log4j2 上的。
+
+`application-dev.properties` 里：
+
+```properties
+logging.config=classpath:log4j2-dev.xml
+```
+
+Spring Boot 启动时按这个路径加载 Log4j2，而不是默认 Logback。`log4j2-dev.xml` 使用 Console Appender，并把 `com.roncoo.education` 设为 debug，因此 `/index` 里的 `logger.debug` 能打出来。
+
+业务代码与 05-1 完全相同：
+
+```java
+private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+logger.debug("this is a log test, debug");
+logger.info("this is a log test, info");
+```
+
+import 仍是 `org.slf4j`。能换成 Log4j2，是因为 `spring-boot-starter-log4j2` 提供了 SLF4J 绑定；前提是 pom 里已经排除 `spring-boot-starter-logging`，否则两套绑定会冲突。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

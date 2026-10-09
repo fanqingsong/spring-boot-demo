@@ -31,6 +31,38 @@
 - 编写 systemd 或 docker 方式托管 jar。
 
 
+## 关键代码说明
+
+本讲的应用代码与 30-1 相同（Druid、MyBatis、Swagger）。部署相关的是打包插件和启动时的 profile。
+
+```xml
+<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+</plugin>
+```
+
+`mvn package` 时这个插件会把依赖打进一个可执行 jar。启动命令：
+
+```bash
+java -jar target/spring-boot-demo-31-1-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
+```
+
+`--spring.profiles.active=prod` 覆盖配置文件里的默认 profile，从而选用生产数据源、日志级别等。不要把生产 profile 写死在源码里再重新打包。
+
+Druid 监控 Servlet 仍是：
+
+```java
+@WebServlet(urlPatterns = { "/druid/*" }, initParams = {
+    @WebInitParam(name = "loginUsername", value = "roncoo"),
+    @WebInitParam(name = "loginPassword", value = "roncoo")
+})
+public class DruidStatViewServlet extends StatViewServlet {
+}
+```
+
+生产环境应修改这里的账号，并限制谁能访问 `/druid/*`。Swagger 的 `/swagger-ui.html` 同样会暴露接口结构，生产环境应关闭 `@EnableSwagger2` 或加上访问控制。Actuator 若一并启用，敏感端点不要对公网匿名开放（见 27-1 的 `security.basic` 配置）。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

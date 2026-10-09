@@ -31,6 +31,47 @@
 - 实现 TTL 过期；缓存用户对象 JSON 序列化。
 
 
+## 关键代码说明
+
+连接信息在 `application-dev.properties`：
+
+```properties
+spring.redis.host=localhost
+spring.redis.port=6379
+```
+
+有这些属性且引入 Redis starter 后，容器里会有 `StringRedisTemplate`。业务代码不自己 `new` 连接。
+
+```java
+@Component
+public class RoncooRedisComponent {
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    public void set(String key, String value) {
+        ValueOperations<String, String> ops = this.stringRedisTemplate.opsForValue();
+        if (!this.stringRedisTemplate.hasKey(key)) {
+            ops.set(key, value);
+        } else {
+            System.out.println("this key = " + ops.get(key));
+        }
+    }
+
+    public String get(String key) {
+        return this.stringRedisTemplate.opsForValue().get(key);
+    }
+
+    public void del(String key) {
+        this.stringRedisTemplate.delete(key);
+    }
+}
+```
+
+- `opsForValue()` 操作字符串类型。键已存在时 `set` 不会覆盖，只打印旧值，这是示例逻辑，不是 Redis 的默认行为。
+- `get` 键不存在时返回 `null`。
+- `StringRedisTemplate` 的键和值都是 String。要存对象需要 `RedisTemplate` 配序列化器，本类没有做这件事。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

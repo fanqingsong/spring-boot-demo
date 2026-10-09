@@ -32,6 +32,40 @@
 - 在 ftl 中循环输出列表；Controller 传入 `List<String>`。
 
 
+## 关键代码说明
+
+和 02-1 的 `@RestController` 不同，页面渲染用 `@Controller`，返回值是视图名。
+
+```java
+@Controller
+@RequestMapping("/web")
+public class WebController {
+
+    @RequestMapping("index")
+    public String index(ModelMap map) {
+        logger.info("这里是controller");
+        map.put("title", "hello world");
+        return "index"; // 注意，不要在最前面加上/，linux下面会出错
+    }
+}
+```
+
+- 返回 `"index"` 时，FreeMarker 自动配置会到 `classpath:/templates/index.ftl` 找模板。前面加 `/` 在 Linux 上会被当成绝对路径，找不到文件。
+- `map.put("title", ...)` 把数据放进模型。模板里用 `${title}` 取值。
+- 方法没有 `@ResponseBody`，所以字符串不会原样输出到浏览器。
+
+模板 `templates/index.ftl`：
+
+```html
+<link href="/css/index.css" rel="stylesheet" />
+<h1 id="title">${title}</h1>
+<script type="text/javascript" src="/webjars/jquery/2.1.4/jquery.min.js"></script>
+```
+
+- `${title}` 由 FreeMarker 在服务端替换成 Controller 传入的 `hello world`。
+- `/css/...`、`/images/...` 对应 `src/main/resources/static/`，Spring MVC 默认把该目录映射到网站根路径。
+- `/webjars/...` 来自 Maven 的 webjars 依赖，同样由静态资源处理器提供。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

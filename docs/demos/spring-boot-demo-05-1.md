@@ -31,6 +31,56 @@ Console + 按环境 RollingFile；logger 包级别控制。
 - 将某个包的日志级别改为 DEBUG，触发 Controller 请求看输出。
 
 
+## 关键代码说明
+
+### 指定使用哪份 Logback 配置
+
+```properties
+logging.config=classpath:logback-roncoo.xml
+spring.profiles.active=dev
+```
+
+不写 `logging.config` 时 Spring Boot 用默认的 `logback-spring.xml` / 内置配置。这里显式指向自定义文件，并且文件里用 `<springProfile>` 按环境分叉。
+
+### `logback-roncoo.xml` 按 profile 选择输出
+
+开发环境只打控制台，并把业务包调到 debug：
+
+```xml
+<springProfile name="dev">
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.roncoo.education" level="debug"/>
+    <root level="info">
+        <appender-ref ref="CONSOLE" />
+    </root>
+</springProfile>
+```
+
+- `<logger name="com.roncoo.education" level="debug"/>` 只放宽这个包，其它包仍受 root 的 info 限制。
+- `<springProfile name="test">` 换成按天滚动的文件 Appender，root 为 info。
+- `<springProfile name="prod">` 同样写文件，但 root 是 warn，debug/info 不会落盘。
+
+`<springProfile>` 读的是 Spring 的 `spring.profiles.active`，所以换环境不用改 XML 里的 if。
+
+### 业务代码只依赖 SLF4J
+
+```java
+private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+
+@RequestMapping
+public String index() {
+    logger.debug("this is a log test, debug");
+    logger.info("this is a log test, info");
+    return "hello world";
+}
+```
+
+`Logger` / `LoggerFactory` 来自 `org.slf4j`，类里没有 Logback 的类型。dev 下访问 `/index` 时，debug 和 info 都会出现在控制台；切到 prod 后这两条都低于 warn，文件里看不到它们。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

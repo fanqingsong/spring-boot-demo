@@ -31,6 +31,49 @@ Swagger 注解描述接口（若有）。
 - 为新接口补充 ApiOperation 描述。
 
 
+## 关键代码说明
+
+Swagger 扫描 Controller，生成可在浏览器里试调用的 API 文档。
+
+```java
+@Configuration
+@EnableSwagger2
+public class Swagger2Configuration {
+
+    @Bean
+    public Docket accessToken() {
+        return new Docket(DocumentationType.SWAGGER_2).groupName("api")
+            .select()
+            .apis(RequestHandlerSelectors.basePackage("com.roncoo.education.controller"))
+            .paths(regex("/api/.*"))
+            .build()
+            .apiInfo(apiInfo());
+    }
+}
+```
+
+- `@EnableSwagger2` 打开文档端点，默认页面是 `/swagger-ui.html`。
+- `basePackage` 只扫描 `com.roncoo.education.controller`。
+- `paths(regex("/api/.*"))` 再滤一遍 URL，只有 `/api/` 开头的接口进入文档。
+
+接口上的注解决定文档里怎么展示：
+
+```java
+@ApiOperation(value = "查找", notes = "根据用户ID查找用户")
+@RequestMapping(value = "/select", method = RequestMethod.GET)
+public RoncooUser get(@RequestParam(defaultValue = "1") Integer id) {
+    return roncooUserMappper.selectByPrimaryKey(id);
+}
+
+@ApiIgnore
+@RequestMapping(value = "/delete", method = RequestMethod.GET)
+public int delete(@RequestParam(defaultValue = "1") Integer id) {
+    return roncooUserMappper.deleteByPrimaryKey(id);
+}
+```
+
+`@ApiOperation` 的 `value` 是接口标题，`notes` 是补充说明。`@ApiIgnore` 让 `/api/delete` 不出现在文档中，即使路径匹配 `/api/.*`。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

@@ -27,6 +27,23 @@
 - 在断点处查看变量（仅限授权环境）。
 
 
+## 关键代码说明
+
+本目录没有业务源码。远程调试的关键是 JVM 参数，而不是 Spring 注解。
+
+被调试的进程要先打开 JDWP 监听：
+
+```bash
+java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -jar app.jar
+```
+
+- `transport=dt_socket`：用套接字传调试数据。
+- `server=y`：这个进程是调试服务端，等 IDE 来连。
+- `suspend=n`：没有调试器附着时也继续启动。改成 `y` 会停在启动处，直到 IDE 连上。
+- `address=5005`：调试端口。IDE 里 Remote JVM Debug 的 Host/Port 填运行该 jar 的机器和 5005。
+
+断点打在与这个 jar **同一份源码** 上。源码和 class 行号不一致时，断点会落在错误的行。只在你有权调试的机器上打开该端口。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

@@ -31,6 +31,26 @@ H2 URL 与 JPA ddl-auto 等。
 - 对比 15-1 与 16-1 数据源配置差异。
 
 
+## 关键代码说明
+
+DAO、Service、`@Transactional` 与 15-1 相同。本讲只换数据源，让本地不必安装 MySQL。
+
+```properties
+spring.datasource.url=jdbc:h2:file:D:/roncoo_h2/roncoo_spring_boot;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE
+spring.datasource.username=roncoo
+spring.datasource.password=roncoo
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+```
+
+- `jdbc:h2:file:...` 使用文件库，数据在进程退出后还在。改成 `jdbc:h2:mem:testdb` 则是内存库，重启即清空。
+- `AUTO_SERVER=TRUE` 允许其它进程同时连这个文件库。
+- `ddl-auto=update` 按实体 `RoncooUserLog` 自动建表或补列。JdbcTemplate 使用的 `roncoo_user` 不会被 JPA 建出来，仍需已有表结构，或自己在 H2 里建表。
+- `show-sql=true` 把 JPA 生成的 SQL 打到日志，便于对照 `findBy...` 方法名。
+
+pom 中增加 `h2` 依赖后，Spring Boot 按 URL 选择驱动，`UserService.register` 的调用方式不变。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

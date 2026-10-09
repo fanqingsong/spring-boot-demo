@@ -31,6 +31,43 @@
 - 实现简单延迟队列或死信（进阶）。
 
 
+## 关键代码说明
+
+结构与 21-1 的 JMS 平行：一个配置类声明队列，一个组件负责发和收。启动类使用 `@EnableRabbit`。
+
+```java
+@Configuration
+public class AmqpConfiguration {
+    @Bean
+    public Queue queue() {
+        return new Queue("roncoo.queue");
+    }
+}
+```
+
+```java
+@Component
+public class RoncooAmqpComponent {
+
+    @Autowired
+    private AmqpTemplate amqpTemplate;
+
+    public void send(String msg) {
+        this.amqpTemplate.convertAndSend("roncoo.queue", msg);
+    }
+
+    @RabbitListener(queues = "roncoo.queue")
+    public void receiveQueue(String text) {
+        System.out.println("接受到：" + text);
+    }
+}
+```
+
+- `new Queue("roncoo.queue")` 是 RabbitMQ 的队列声明，应用启动时会在 broker 上确保该队列存在。
+- `convertAndSend` 的第一个参数是队列名，消息体是字符串。
+- `@RabbitListener(queues = "roncoo.queue")` 订阅同一队列。消费者方法的参数类型是 `String`，框架按消息转换器把 body 转成文本。
+- 连接主机、端口、账号在 spring rabbit 配置里。本机没有 RabbitMQ 时，监听容器会在启动阶段报连接失败。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

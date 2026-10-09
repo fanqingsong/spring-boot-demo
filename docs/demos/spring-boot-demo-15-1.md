@@ -31,6 +31,41 @@
 - 配置只读事务 `@Transactional(readOnly=true)` 用于查询方法。
 
 
+## 关键代码说明
+
+注册要写两张表：用户用 JdbcTemplate，日志用 JPA。`@Transactional` 把两次写入放进同一个事务。
+
+```java
+@Service
+public class UserService {
+
+    @Autowired
+    private RoncooUserDao roncooUserDao;
+    @Autowired
+    private RoncooUserLogDao roncooUserLogDao;
+
+    @Transactional
+    public String register(String name, String ip) {
+        RoncooUser roncooUser = new RoncooUser();
+        roncooUser.setName(name);
+        roncooUser.setCreateTime(new Date());
+        roncooUserDao.insert(roncooUser);
+
+        RoncooUserLog roncooUserLog = new RoncooUserLog();
+        roncooUserLog.setUserName(name);
+        roncooUserLog.setUserIp(ip);
+        roncooUserLog.setCreateTime(new Date());
+        roncooUserLogDao.save(roncooUserLog);
+        return "success";
+    }
+}
+```
+
+- 事务加在 Service 上，而不是 DAO。一次业务（注册）对应一个事务边界。
+- 方法正常返回时提交：`insert` 和 `save` 都落库。
+- 方法抛出运行时异常时回滚。源码里留了一段注释掉的 `throw new RuntimeException()`，打开后用户插入也会被回滚，两张表都不应出现这次注册的数据。
+- 调用必须经过 Spring 代理（其它 Bean 注入 `UserService` 再调用）。同类内部 `this.register(...)` 不会启动事务。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：

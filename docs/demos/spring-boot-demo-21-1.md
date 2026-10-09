@@ -31,6 +31,44 @@ ConnectionFactory、Listener 容器配置。
 - 定义 Queue 与 Topic 各发一条消息对比。
 
 
+## 关键代码说明
+
+JMS 需要队列 Bean，以及启动类上的 `@EnableJms`，`@JmsListener` 才会注册监听。
+
+```java
+@Configuration
+public class JmsConfiguration {
+    @Bean
+    public Queue queue() {
+        return new ActiveMQQueue("roncoo.queue");
+    }
+}
+```
+
+```java
+@Component
+public class RoncooJmsComponent {
+
+    @Autowired
+    private JmsMessagingTemplate jmsMessagingTemplate;
+    @Autowired
+    private Queue queue;
+
+    public void send(String msg) {
+        this.jmsMessagingTemplate.convertAndSend(this.queue, msg);
+    }
+
+    @JmsListener(destination = "roncoo.queue")
+    public void receiveQueue(String text) {
+        System.out.println("接受到：" + text);
+    }
+}
+```
+
+- `ActiveMQQueue("roncoo.queue")` 声明目的地名称。`send` 把字符串交给 `JmsMessagingTemplate`，由它转成 JMS 消息发到这个队列。
+- `@JmsListener(destination = "roncoo.queue")` 的名字必须和队列一致。同一进程里发送后，监听方法会收到文本并打印。
+- 目的地是 Queue（点对点），不是 Topic。应用要能连上 `application-*.properties` 里的 ActiveMQ 地址，否则启动或发送时会报连接错误。
+
 ## 关键源码路径
 
 按下面路径在 IDE 中打开对照（相对各 demo 工程根目录）：
