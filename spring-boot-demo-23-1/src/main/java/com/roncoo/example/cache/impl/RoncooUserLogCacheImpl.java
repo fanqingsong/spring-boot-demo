@@ -25,7 +25,7 @@ public class RoncooUserLogCacheImpl implements RoncooUserLogCache {
 	@Override
 	public RoncooUserLog selectById(Integer id) {
 		System.out.println("查询功能，缓存找不到，直接读库, id=" + id);
-		return roncooUserLogDao.findOne(id);
+		return roncooUserLogDao.findById(id).orElse(null);
 	}
 
 	@CachePut(key = "#p0")

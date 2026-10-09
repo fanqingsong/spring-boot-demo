@@ -25,7 +25,7 @@ public class RoncooUserLogCacheImpl implements RoncooUserLogCache {
 	@Override
 	public RoncooUserLog selectById(Integer id) {
 		System.out.println("查询功能，缓存找不到，直接读库, id=" + id);
-		return roncooUserLogDao.findOne(id);
+		return roncooUserLogDao.findById(id).orElse(null);
 	}
 
 	@CachePut(key = "#p0.id")
@@ -39,7 +39,7 @@ public class RoncooUserLogCacheImpl implements RoncooUserLogCache {
 	@Override
 	public String deleteById(Integer id) {
 		System.out.println("删除功能，删除缓存，直接写库, id=" + id);
-		roncooUserLogDao.delete(id);
+		roncooUserLogDao.deleteById(id);
 		return "清空缓存成功";
 	}
 

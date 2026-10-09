@@ -2,16 +2,13 @@ package com.roncoo.education;
 
 import java.util.Date;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.roncoo.education.bean.RoncooUser;
 import com.roncoo.education.mapper.RoncooUserMapper;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class SpringBootDemo301ApplicationTests {
 

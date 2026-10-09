@@ -1,6 +1,6 @@
 package com.roncoo.example.util.configuration;
 
-import javax.jms.Queue;
+import jakarta.jms.Queue;
 
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.context.annotation.Bean;

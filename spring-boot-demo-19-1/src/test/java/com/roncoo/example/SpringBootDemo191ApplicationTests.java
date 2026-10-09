@@ -2,8 +2,7 @@ package com.roncoo.example;
 
 import java.util.Date;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -12,12 +11,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.roncoo.example.bean.RoncooUserLog;
 import com.roncoo.example.dao.RoncooUserLogMongoDao;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class SpringBootDemo191ApplicationTests {
 
@@ -36,7 +33,7 @@ public class SpringBootDemo191ApplicationTests {
 
 	@Test
 	public void delete() {
-		roncooUserLogMongoDao.delete(1);
+		roncooUserLogMongoDao.deleteById(1);
 	}
 
 	@Test
@@ -51,7 +48,7 @@ public class SpringBootDemo191ApplicationTests {
 
 	@Test
 	public void select() {
-		RoncooUserLog result = roncooUserLogMongoDao.findOne(1);
+		RoncooUserLog result = roncooUserLogMongoDao.findById(1).orElse(null);
 		System.out.println(result);
 	}
 

@@ -1,14 +1,11 @@
 package com.roncoo.example;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.roncoo.example.service.UserService;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class SpringBootDemo151ApplicationTests {
 	

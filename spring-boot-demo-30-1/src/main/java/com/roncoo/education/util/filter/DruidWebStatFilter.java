@@ -1,7 +1,7 @@
 package com.roncoo.education.util.filter;
 
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.annotation.WebInitParam;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebInitParam;
 
 import com.alibaba.druid.support.http.WebStatFilter;
 

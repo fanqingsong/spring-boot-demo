@@ -1,6 +1,6 @@
 package com.roncoo.example.component;
 
-import javax.jms.Queue;
+import jakarta.jms.Queue;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;

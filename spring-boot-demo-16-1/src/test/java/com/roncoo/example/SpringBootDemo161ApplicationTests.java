@@ -10,19 +10,16 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.protocol.HttpContext;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import com.roncoo.example.bean.RoncooUserLog;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class SpringBootDemo161ApplicationTests {
 	
@@ -84,7 +81,7 @@ public class SpringBootDemo161ApplicationTests {
 
 	@Test
 	public void delete() {
-		roncooUserLogDao.delete(1);
+		roncooUserLogDao.deleteById(1);
 	}
 
 	@Test
@@ -99,7 +96,7 @@ public class SpringBootDemo161ApplicationTests {
 
 	@Test
 	public void select() {
-		RoncooUserLog result = roncooUserLogDao.findOne(2);
+		RoncooUserLog result = roncooUserLogDao.findById(2).orElse(null);
 		System.out.println(result);
 	}
 
